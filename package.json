@@ -1,0 +1,31 @@
+{
+  "name": "stymie",
+  "version": "0.1.0",
+  "description": "Cryptographically secure password manager for NodeJS",
+  "bin": {
+    "stymie": "./bin/stymie"
+  },
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "password manager",
+    "GPG",
+    "PGP",
+    "diceware",
+    "cryptography"
+  ],
+  "author": "Benjamin Toll",
+  "license": "ISC",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/btoll/stymie"
+  },
+  "dependencies": {
+    "diceware": "git+https://github.com/btoll/diceware.git",
+    "inquirer": "^0.11.0",
+    "jcrypt": "git+https://github.com/btoll/jcrypt.git",
+    "yargs": "^3.31.0"
+  }
+}

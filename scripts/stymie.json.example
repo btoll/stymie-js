@@ -1,0 +1,7 @@
+{
+    "armor": false,
+    "hash": "sha256WithRSAEncryption",
+    "recipient": "ben@benjamintoll.com",
+    "sign": true
+}
+
