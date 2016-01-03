@@ -32,32 +32,50 @@
             .help('h')
             .alias('h', 'help')
             .argv,
+        install = require('../lib/install'),
         command = argv._[0];
 
     if (command === 'init') {
-        require('../lib/install').install();
+        install.install();
     } else {
-        try {
-            let stymie = require('../index');
+        let stymie = require('../index'),
+            util = require('../lib/util'),
+            env = process.env,
+            stymieDir = `${env.STYMIE || env.HOME}/.stymie.d`;
 
-            if (command === 'add') {
-                stymie.add(argv._[1]);
-            } else if (command === 'edit') {
-                stymie.edit(argv._[1]);
-            } else if (command === 'generate') {
-                stymie.generate(argv._[1]);
-            } else if (command === 'get') {
-                stymie.get(argv._[1]);
-            } else if (command === 'has') {
-                stymie.has(argv._[1]);
-            } else if (command === 'list') {
-                stymie.list(argv._[1]);
-            } else if (command === 'remove') {
-                stymie.remove(argv._[1]);
-            }
-        } catch (err) {
-            // Intentionally left blank.
-        }
+        util.fileExists(`${stymieDir}/c`).then((file) => {
+            require('jcrypt')(file, null, ['--decrypt'], true).then((data) => {
+                util.setGPGOptions(data);
+
+                switch (command) {
+                    case 'add': stymie.add(argv._[1]); break;
+                    case 'edit': stymie.edit(argv._[1]); break;
+                    case 'generate': stymie.generate(argv._[1]); break;
+                    case 'get': stymie.get(argv._[1]); break;
+                    case 'has': stymie.has(argv._[1]); break;
+                    case 'list': stymie.list(argv._[1]); break;
+                    case 'remove': stymie.remove(argv._[1]); break;
+                }
+            });
+        }).catch((err) => {
+            util.logError('It appears that the password file directory and config file needed by stymie is not installed.\n');
+
+            require('inquirer').prompt([{
+                type: 'list',
+                name: 'install',
+                message: 'Do you wish to install now?:',
+                choices: [
+                    {name: 'Yes', value: true},
+                    {name: 'No, I\'ll do it myself later.', value: false}
+                ]
+            }], (answers) => {
+                if (!answers.install) {
+                    util.logInfo('Run `bash scripts/postinstall.sh` to install.');
+                } else {
+                    install.install();
+                }
+            });
+        });
     }
 })();
 

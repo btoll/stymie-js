@@ -5,75 +5,18 @@
 (() => {
     'use strict';
 
-    let env = process.env,
+    let diceware = require('diceware'),
+        fs = require('fs'),
+        inquirer = require('inquirer'),
+        jcrypt = require('jcrypt'),
+        util = require('./lib/util'),
+        logError = util.logError,
+        logInfo = util.logInfo,
+        logSuccess = util.logSuccess,
+        env = process.env,
         stymieDir = `${env.STYMIE || env.HOME}/.stymie.d`,
         entryDir = `${stymieDir}/s`,
-        logError = console.log.bind(console, '[ERROR]'),
-        logInfo = console.log.bind(console, '[INFO]'),
-        logSuccess = console.log.bind(console, '[SUCCESS]'),
-        inquirer = require('inquirer'),
-        stymierc, Stymie, crypto, diceware, fs, jcrypt;
-
-    try {
-        stymierc = require(`${stymieDir}/stymie.json`);
-    } catch (err) {
-        logError('It appears that the password file directory and config file needed by stymie is not installed.\n');
-
-        inquirer.prompt([{
-            type: 'list',
-            name: 'install',
-            message: 'Do you wish to install now?:',
-            choices: [
-                {name: 'Yes', value: true},
-                {name: 'No, I\'ll do it myself later.', value: false}
-            ]
-        }], (answers) => {
-            if (!answers.install) {
-                logInfo('Run `bash scripts/postinstall.sh` to install.');
-            } else {
-                require('./lib/install').install();
-            }
-        });
-    }
-
-    crypto = require('crypto');
-    diceware = require('diceware');
-    fs = require('fs');
-    jcrypt = require('jcrypt');
-
-    function fileExists(file) {
-        return new Promise((resolve, reject) => {
-            fs.stat(`${entryDir}/${file}`, (err) => {
-                if (err) {
-                    reject('No matching entry');
-                } else {
-                    resolve(file);
-                }
-            });
-        });
-    }
-
-    function getGPGOptions() {
-        let arr = ['--encrypt', '-r', stymierc.recipient];
-
-        if (stymierc.armor) {
-            arr.push('--armor');
-        }
-
-        if (stymierc.sign) {
-            arr.push('--sign');
-        }
-
-        return arr;
-    }
-
-    function hashFilename(file) {
-        if (!file) {
-            return;
-        }
-
-        return crypto.createHash(stymierc.hash).update(file).digest('hex');
-    }
+        Stymie;
 
     Stymie = {
         add: (() => {
@@ -104,8 +47,10 @@
             }
 
             function makeFileEntry(username, password) {
+                let listFile = `${stymieDir}/l`;
+
                 jcrypt.stream(formatData(username, password), `${entryDir}/${hashedFilename}`, {
-                    gpg: getGPGOptions(),
+                    gpg: util.getGPGArgs(),
                     file: {
                         flags: 'w',
                         defaultEncoding: 'utf8',
@@ -115,7 +60,24 @@
                 }, true)
                 .then(() => {
                     logSuccess('Entry created');
+
+                    return jcrypt(listFile, null, ['--decrypt'], true);
                 })
+                .then((data) => {
+                    let list = new Set(JSON.parse(data));
+                    list.add(newEntry);
+
+                    return jcrypt.stream(JSON.stringify(Array.from(list), null, 4), `${stymieDir}/l`, {
+                        gpg: util.getGPGArgs(),
+                        file: {
+                            flags: 'w',
+                            defaultEncoding: 'utf8',
+                            fd: null,
+                            mode: 0o0600
+                        }
+                    }, true);
+                })
+                .then(logSuccess)
                 .catch(logError);
             }
 
@@ -126,12 +88,12 @@
                 }
 
                 newEntry = entry;
-                hashedFilename = hashFilename(entry);
+                hashedFilename = util.hashFilename(entry);
 
                 // This seems counter-intuitive because the resolve and reject operations
                 // are reversed, but this is b/c the success case is when the file does not
                 // exist (and thus will throw an exception).
-                fileExists(hashedFilename).then(() => {
+                util.fileExists(`${entryDir}/${hashedFilename}`).then(() => {
                     logError('Entry already exists');
                 }).catch(() => {
                     inquirer.prompt([{
@@ -176,32 +138,14 @@
         })(),
 
         edit: (() => {
-            let file;
-
-            function openEditor(callback) {
+            function openEditor(file, callback) {
                 let editor = env.EDITOR || 'vim',
-                    args = (editor === 'vim') ?
-                        [
-                            '-c', ':set nobackup',
-                            '-c', ':set nowritebackup',
-                            '-c', ':set noswapfile',
-                            '-c', ':set noundofile',
-                            // Erases all session information when the
-                            // file is closed.
-                            '-c', ':set bufhidden=wipe',
-                            // Auto-closes folds when leaving them.
-                            //'-c', 'fcl=all',
-                            // Automatically folds indented lines when
-                            // the file is opened.
-                            // (prying eyes === 'DRAT foiled again')
-                            '-c', ':set foldmethod=indent',
-                            // Don't display the first line of text
-                            // (the username) in the folded text.
-                            '-c', ':set foldtext=""',
-                            '-c', ':set viminfo=',
-                            file
-                        ] :
-                        [file];
+                    // Note: Requiring json will also auto-parse it.
+                    args = require(`./editors/${editor}`);
+
+                // The editor modules will only contain the CLI args
+                // so we need to push on the filename.
+                args.push(file);
 
                 require('child_process').spawn(editor, args, {
                     stdio: 'inherit'
@@ -209,18 +153,17 @@
             }
 
             return (entry) => {
-                let hashedFilename = hashFilename(entry);
+                let hashedFilename = util.hashFilename(entry),
+                    path = `${entryDir}/${hashedFilename}`;
 
-                fileExists(hashedFilename).then(() => {
-                    file = `${entryDir}/${hashedFilename}`;
-
-                    jcrypt(file, null, ['--decrypt'])
+                util.fileExists(path).then(() => {
+                    jcrypt(path, null, ['--decrypt'])
                     .then(() => {
-                        openEditor(() => {
+                        openEditor(path, () => {
                             // Re-encrypt once done.
-                            jcrypt(file, null, getGPGOptions())
+                            jcrypt(path, null, util.getGPGArgs())
                             .then(() => {
-                                logInfo('Re-encrypting and closing entry');
+                                logInfo('Re-encrypting and closing the entry');
                             })
                             .catch(logError);
                         });
@@ -235,18 +178,19 @@
         },
 
         get: (entry) => {
-            let hashedFilename = hashFilename(entry);
+            let hashedFilename = util.hashFilename(entry);
 
-            fileExists(hashedFilename).then((file) => {
+            util.fileExists(`${entryDir}/${hashedFilename}`).then((file) => {
                 // Pipe to stdout.
-                jcrypt.stream(`${entryDir}/${file}`, null, ['--decrypt']).catch(logError);
+                jcrypt.stream(file, null, ['--decrypt'])
+                .catch(logError);
             }).catch(logError);
         },
 
         has: (entry) => {
-            let hashedFilename = hashFilename(entry);
+            let hashedFilename = util.hashFilename(entry);
 
-            fileExists(hashedFilename).then(() => {
+            util.fileExists(`${entryDir}/${hashedFilename}`).then(() => {
                 logInfo('Entry exists');
             }).catch(logError);
         },
@@ -271,9 +215,10 @@
             }
 
             return (entry) => {
-                let hashedFilename = hashFilename(entry);
+                let hashedFilename = util.hashFilename(entry),
+                    path = `${entryDir}/${hashedFilename}`;
 
-                fileExists(hashedFilename).then(() => {
+                util.fileExists(path).then(() => {
                     inquirer.prompt([{
                         type: 'list',
                         name: 'remove',
@@ -284,7 +229,7 @@
                         ]
                     }], (answers) => {
                         if (answers.remove) {
-                            remove(`${entryDir}/${hashedFilename}`)
+                            remove(path)
                             .then(logSuccess)
                             .catch(logError);
                         } else {

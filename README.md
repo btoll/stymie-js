@@ -6,10 +6,10 @@ Finally, I had some down time and coded up **stymie**. While the convenience is 
 
 ### Security Features
 
-- Uses GPG/PGP public-key cryptography to encrypt each file.
+- Uses GPG/PGP public-key cryptography to encrypt all files, both entries and configs.
 - Uses OS-level permissions-based access control so only the user can view and list the password files.
 - Uses the [shred] utility to overwrite the password file in place (including a final pass of zeroes to hide the shredding) before unlinking.
-- Does not leave any swap files or backups during or after editing.
+- Does not leave any swap files or backups during or after editing (Vim).
 
 ### Installation
 
@@ -21,6 +21,12 @@ In addition, it's highly recommended to set/update `$HISTIGNORE` to ignore any *
 As an alternative to setting `$HISTIGNORE`, most shells by default allow for any command preceded by a [[SPACE]] to be ignored by history. Check `$HISTCONTROL` to make sure.
 
 *** Only Linux and OS X are supported at this time. There are no plans to support Windows.
+
+### Suggestions
+
+- Use `gpg-agent` to save typing!
+- Set `$EDITOR` environment variable to preferred editor.
+
 
 ### Usage
 
