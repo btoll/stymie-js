@@ -1,4 +1,4 @@
-#!/usr/bin/env node --harmony
+#!/usr/bin/env node
 
 (() => {
     'use strict';
@@ -29,6 +29,9 @@
             .example('stymie remove', 'Deletes an entry')
             .command('remove', 'Delete an entry')
 
+            .alias('f', 'file')
+            .describe('f', 'Operate on a file rather than an entry')
+
             .help('h')
             .alias('h', 'help')
             .argv,
@@ -48,17 +51,17 @@
                 util.setGPGOptions(data);
 
                 switch (command) {
-                    case 'add': stymie.add(argv._[1]); break;
-                    case 'edit': stymie.edit(argv._[1]); break;
-                    case 'generate': stymie.generate(argv._[1]); break;
-                    case 'get': stymie.get(argv._[1]); break;
-                    case 'has': stymie.has(argv._[1]); break;
-                    case 'list': stymie.list(argv._[1]); break;
-                    case 'remove': stymie.remove(argv._[1]); break;
+                    case 'add': stymie.add(argv._[1], argv.file); break;
+                    case 'edit': stymie.edit(argv._[1], argv.file); break;
+                    case 'generate': stymie.generate(); break;
+                    case 'get': stymie.get(argv._[1], argv.file); break;
+                    case 'has': stymie.has(argv._[1], argv.file); break;
+                    case 'list': stymie.list(argv.file); break;
+                    case 'remove': stymie.remove(argv._[1], argv.file); break;
                 }
             });
         }).catch((err) => {
-            util.logError('It appears that the password file directory and config file needed by stymie is not installed.\n');
+            util.logWarning('It appears that stymie is not installed.\n');
 
             require('inquirer').prompt([{
                 type: 'list',
