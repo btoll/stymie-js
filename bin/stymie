@@ -30,7 +30,7 @@
             .command('remove', 'Delete an entry')
 
             .alias('f', 'file')
-            .describe('f', 'Operate on a file rather than an entry')
+            .describe('f', 'Operate on files')
 
             .help('h')
             .alias('h', 'help')
@@ -73,7 +73,7 @@
                 ]
             }], (answers) => {
                 if (!answers.install) {
-                    util.logInfo('Run `bash scripts/postinstall.sh` to install.');
+                    util.logInfo('Run `bash scripts/postinstall.bash` to install.');
                 } else {
                     install.install();
                 }
