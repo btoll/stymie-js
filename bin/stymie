@@ -29,8 +29,8 @@
             .example('stymie remove', 'Deletes an entry')
             .command('remove', 'Delete an entry')
 
-            .alias('f', 'file')
-            .describe('f', 'Operate on files')
+            .describe('field', 'Get specified key from an entry (only with `get` command)')
+            .describe('file', 'Operate on files')
 
             .help('h')
             .alias('h', 'help')
@@ -54,7 +54,7 @@
                     case 'add': stymie.add(argv._[1], argv.file); break;
                     case 'edit': stymie.edit(argv._[1], argv.file); break;
                     case 'generate': stymie.generate(); break;
-                    case 'get': stymie.get(argv._[1], argv.file); break;
+                    case 'get': stymie.get(argv._[1], argv.file, argv.field); break;
                     case 'has': stymie.has(argv._[1], argv.file); break;
                     case 'list': stymie.list(argv.file); break;
                     case 'remove': stymie.remove(argv._[1], argv.file); break;

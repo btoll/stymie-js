@@ -5,10 +5,12 @@
 - No need to remember another password, `stymie` will use the default GPG key.
 - Create any number of key fields beyond the default username and password.  For example:
 
-    username: 'derp',
-    password: '1234',
-    SSN: '123-45-6789',
-    securityAnswer: '1st Avenue'
+```
+username: 'derp',
+password: '1234',
+SSN: '123-45-6789',
+securityAnswer: '1st Avenue'
+```
 
 - Create encrypted files as well as key entries.
 - Since everything is stored in `.stymie_d/`, it's easy to port between systems.
@@ -51,7 +53,8 @@ Only Linux and OS X are supported at this time. There are no plans to support Wi
 
     Option | Description
     ------------ | -------------
-    -f, --file | Operate on files.
+    --field | Get specified key from an entry (only with `get` command).
+    --file | Operate on files.
     -h, --help | Display help.
 
 [shred]: https://en.wikipedia.org/wiki/Shred_(Unix)

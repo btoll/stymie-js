@@ -117,7 +117,7 @@
             log(diceware.generate());
         },
 
-        get: (key, onFile) => {
+        get: (key, onFile, field) => {
             if (!onFile) {
                 jcrypt(keyFile, null, ['--decrypt'], true)
                 .then((data) => {
@@ -125,9 +125,19 @@
                         item = list[key];
 
                     if (item) {
-                        for (let n in item) {
-                            if (item.hasOwnProperty(n) && n !== 'key') {
-                                log(`${n}: ${item[n]}`);
+                        if (!field) {
+                            for (let n in item) {
+                                if (item.hasOwnProperty(n) && n !== 'key') {
+                                    log(`${n}: ${item[n]}`);
+                                }
+                            }
+                        } else {
+                            let f = item[field];
+
+                            if (!f) {
+                                logError('No field found');
+                            } else {
+                                log(f);
                             }
                         }
                     } else {
