@@ -38,6 +38,27 @@ Only Linux and OS X are supported at this time. There are no plans to support Wi
 - Use `gpg-agent` to save typing.
 - Set `$EDITOR` environment variable to preferred editor. Place editor configs in the `editors/` directory. See the [example for Vim](editors/vim.json).
 
+### Examples
+- Add an encrypted file with the key name `secrets`:
+```
+stymie add secrets --file
+```
+
+- Create the `example.com` key:
+```
+stymie add example.com
+```
+
+- Get just the `username` field value from the `example.com` key:
+```
+stymie get example.com --field username
+```
+
+- Get just the `password` field value from the `example.com` key and copy it to the system clipboard (OS X):
+```
+stymie get example.com --field password | pbcopy
+```
+
 ### Usage
 
     Command | Description
@@ -53,7 +74,7 @@ Only Linux and OS X are supported at this time. There are no plans to support Wi
 
     Option | Description
     ------------ | -------------
-    --field | Get specified key from an entry (only with `get` command).
+    --field | Gets the specified key value from an entry (only with `get` command).
     --file | Operate on files.
     -h, --help | Display help.
 

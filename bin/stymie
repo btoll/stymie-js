@@ -29,7 +29,7 @@
             .example('stymie remove', 'Deletes an entry')
             .command('remove', 'Delete an entry')
 
-            .describe('field', 'Get specified key from an entry (only with `get` command)')
+            .describe('field', 'Gets the specified key value from an entry (only with `get` command)')
             .describe('file', 'Operate on files')
 
             .help('h')
