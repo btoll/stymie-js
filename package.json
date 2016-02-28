@@ -5,9 +5,10 @@
   "bin": {
     "stymie": "./bin/stymie"
   },
-  "main": "index.js",
+  "main": "./index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "lint": "eslint index.js lib bin",
+    "test": "npm run lint"
   },
   "keywords": [
     "password manager",
@@ -17,7 +18,7 @@
     "cryptography"
   ],
   "author": "Benjamin Toll",
-  "license": "ISC",
+  "license": "MIT",
   "repository": {
     "type": "git",
     "url": "https://github.com/btoll/stymie"

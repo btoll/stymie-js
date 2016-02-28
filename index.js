@@ -4,7 +4,6 @@
     'use strict';
 
     let diceware = require('diceware'),
-        fs = require('fs'),
         inquirer = require('inquirer'),
         jcrypt = require('jcrypt'),
         libKey = require('./lib/key'),
