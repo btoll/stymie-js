@@ -28,5 +28,8 @@
     "inquirer": "^0.11.0",
     "jcrypt": "git+https://github.com/btoll/jcrypt.git",
     "yargs": "^3.31.0"
+  },
+  "devDependencies": {
+    "eslint": "^2.2.0"
   }
 }
