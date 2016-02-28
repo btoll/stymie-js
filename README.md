@@ -80,5 +80,13 @@ stymie get example.com --field password | pbcopy
     --file | Operate on files.
     -h, --help | Display help.
 
+## License
+
+[MIT](LICENSE)
+
+## Author
+
+Benjamin Toll
+
 [shred]: https://en.wikipedia.org/wiki/Shred_(Unix)
 
