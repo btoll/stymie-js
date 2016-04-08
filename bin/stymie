@@ -34,14 +34,14 @@ let argv = require('yargs')
         .help('h')
         .alias('h', 'help')
         .argv,
-    install = require('../lib/install'),
+    install = require('../src/lib/install'),
     command = argv._[0];
 
 if (command === 'init') {
     install.install();
 } else {
-    let stymie = require('../index'),
-        util = require('../lib/util'),
+    let stymie = require('../src/index'),
+        util = require('../src/lib/util'),
         env = process.env,
         stymieDir = `${env.STYMIE || env.HOME}/.stymie.d`;
 
