@@ -3,6 +3,8 @@
 'use strict';
 
 let inquirer = require('inquirer'),
+    cp = require('child_process'),
+    which = require('which'),
     jcrypt = require('jcrypt'),
     util = require('./util'),
     logError = util.logError,
@@ -15,13 +17,13 @@ let inquirer = require('inquirer'),
 function openEditor(file, callback) {
     let editor = env.EDITOR || 'vim',
         // Note: Requiring json will also auto-parse it.
-        args = require(`../editors/${editor}`);
+        args = require(`../../editors/${editor}`);
 
     // The editor modules will only contain the CLI args
     // so we need to push on the filename.
     args.push(file);
 
-    require('child_process').spawn(editor, args, {
+    cp.spawn(editor, args, {
         stdio: 'inherit'
     }).on('exit', callback);
 }
@@ -100,14 +102,23 @@ stymie = {
     remove: (() => {
         function remove(file) {
             return new Promise((resolve, reject) => {
-                let shred = require('child_process').spawn('shred', ['--zero', '--remove', file]);
+                which('shred', err => {
+                    let rm;
 
-                shred.on('close', (code) => {
-                    if (code !== 0) {
-                        reject('Something terrible happened!');
+                    if (err) {
+                        logInfo('You\'re OS doesn\`t have the `shred` utility installed, falling back to `rm`...');
+                        rm = cp.spawn('rm', [file]);
                     } else {
-                        resolve('File has been removed');
+                        rm = cp.spawn('shred', ['--zero', '--remove', file]);
                     }
+
+                    rm.on('close', (code) => {
+                        if (code !== 0) {
+                            reject('Something terrible happened!');
+                        } else {
+                            resolve('The file has been removed');
+                        }
+                    });
                 });
             });
         }
