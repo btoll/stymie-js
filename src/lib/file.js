@@ -99,8 +99,8 @@ stymie = {
         }).catch(logError);
     },
 
-    remove: (() => {
-        function remove(file) {
+    rm: (() => {
+        function rm(file) {
             return new Promise((resolve, reject) => {
                 which('shred', err => {
                     let rm;
@@ -130,15 +130,15 @@ stymie = {
             util.fileExists(path).then(() => {
                 inquirer.prompt([{
                     type: 'list',
-                    name: 'remove',
+                    name: 'rm',
                     message: 'Are you sure?',
                     choices: [
                         {name: 'Yes', value: true},
                         {name: 'No', value: false}
                     ]
                 }], (answers) => {
-                    if (answers.remove) {
-                        remove(path)
+                    if (answers.rm) {
+                        rm(path)
                         .then(logSuccess)
                         .catch(logError);
                     } else {

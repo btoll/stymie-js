@@ -25,8 +25,8 @@ let argv = require('yargs')
         .example('stymie list', 'Lists all entries')
         .command('list', 'List all entries')
 
-        .example('stymie remove', 'Deletes an entry')
-        .command('remove', 'Delete an entry')
+        .example('stymie rm', 'Deletes an entry')
+        .command('rm', 'Delete an entry')
 
         .describe('field', 'Gets the specified key value from an entry (only with `get` command)')
         .describe('file', 'Operate on files')
@@ -56,7 +56,8 @@ if (command === 'init') {
                 case 'get': stymie.get(argv._[1], argv.file, argv.field); break;
                 case 'has': stymie.has(argv._[1], argv.file); break;
                 case 'list': stymie.list(argv.file); break;
-                case 'remove': stymie.remove(argv._[1], argv.file); break;
+                case 'rm': stymie.rm(argv._[1], argv.file); break;
+                default: util.logError('Bad command');
             }
         });
     }).catch((err) => {

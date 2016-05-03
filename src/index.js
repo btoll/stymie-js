@@ -181,7 +181,7 @@ stymie = {
         }
     },
 
-    remove: (key, onFile) => {
+    rm: (key, onFile) => {
         if (!onFile) {
             jcrypt(keyFile, null, ['--decrypt'], true)
             .then((data) => {
@@ -191,7 +191,7 @@ stymie = {
                     if (list[key]) {
                         inquirer.prompt([{
                             type: 'list',
-                            name: 'remove',
+                            name: 'rm',
                             message: 'Are you sure?',
                             choices: [
                                 {name: 'Yes', value: true},
@@ -199,7 +199,7 @@ stymie = {
                             ],
                             default: false
                         }], (answers) => {
-                            if (answers.remove) {
+                            if (answers.rm) {
                                 delete list[key];
                                 resolve(list);
 
@@ -229,7 +229,7 @@ stymie = {
             })
             .catch(logError);
         } else {
-            libFile.remove(key);
+            libFile.rm(key);
         }
     }
 };

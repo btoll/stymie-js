@@ -72,7 +72,7 @@ stymie get example.com --field password | pbcopy
     has | Checks if the entry exists.
     init | Installs the password file directory and config file.
     list | List all entries.
-    remove | Deletes an entry.
+    rm | Deletes an entry.
 
     Option | Description
     ------------ | -------------
