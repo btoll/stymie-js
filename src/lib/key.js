@@ -1,16 +1,16 @@
 'use strict';
 
-let diceware = require('diceware'),
-    inquirer = require('inquirer'),
-    jcrypt = require('jcrypt'),
-    util = require('./util'),
-    log = util.log,
-    logError = util.logError,
-    logInfo = util.logInfo,
-    logSuccess = util.logSuccess,
-    env = process.env,
-    keyFile = `${env.STYMIE || env.HOME}/.stymie.d/k`,
-    iter;
+const diceware = require('diceware');
+const inquirer = require('inquirer');
+const jcrypt = require('jcrypt');
+const util = require('./util');
+const log = util.log;
+const logError = util.logError;
+const logInfo = util.logInfo;
+const logSuccess = util.logSuccess;
+const env = process.env;
+const keyFile = `${env.STYMIE || env.HOME}/.stymie.d/k`;
+let iter;
 
 function* generateKey(key) {
     let entry = yield getCredentials(key);
@@ -22,7 +22,7 @@ function makePassphrase(entry) {
     if (entry.password !== undefined) {
         iter.next(entry);
     } else {
-        let password = diceware.generate();
+        const password = diceware.generate();
 
         log(password);
 
@@ -34,7 +34,7 @@ function makePassphrase(entry) {
                 {name: 'Yes', value: true},
                 {name: 'No, generate another', value: false}
             ]
-        }], (answers) => {
+        }], answers => {
             if (answers.accept) {
                 entry.password = password;
                 iter.next(entry);
@@ -47,8 +47,8 @@ function makePassphrase(entry) {
 
 function getCredentials(key) {
     jcrypt(keyFile, null, ['--decrypt'], true)
-    .then((data) => {
-        let list = JSON.parse(data);
+    .then(data => {
+        const list = JSON.parse(data);
 
         if (list[key]) {
             logInfo('Key already exists');
@@ -77,10 +77,10 @@ function getCredentials(key) {
                 name: 'password',
                 message: 'Enter password:',
                 validate: util.noBlanks,
-                when: (answers) => {
+                when: answers => {
                     return !answers.generatePassword;
                 }
-            }], (answers) => {
+            }], answers => {
                 makePassphrase({
                     key: key,
                     url: answers.url,
@@ -107,7 +107,7 @@ function getFields(entry) {
         name: 'name',
         message: 'Name:',
         validate: util.noBlank,
-        when: (answers) => {
+        when: answers => {
             return answers.newField;
         }
     }, {
@@ -115,10 +115,10 @@ function getFields(entry) {
         name: 'value',
         message: 'Value:',
         validate: util.noBlank,
-        when: (answers) => {
+        when: answers => {
             return answers.newField;
         }
-    }], (answers) => {
+    }], answers => {
         if (!answers.newField) {
             iter.next(entry);
         } else {
@@ -130,12 +130,11 @@ function getFields(entry) {
 
 function makeKey(entry) {
     jcrypt(keyFile, null, ['--decrypt'], true)
-    .then((data) => {
-        let list = JSON.parse(data),
-            item;
+    .then(data => {
+        const list = JSON.parse(data);
+        const item = list[entry.key] = {};
 
-        item = list[entry.key] = {};
-
+        // TODO: Iterator.
         for (let n in entry) {
             if (entry.hasOwnProperty(n) && n !== 'key') {
                 item[n] = entry[n];
@@ -158,7 +157,7 @@ function makeKey(entry) {
     .catch(logError);
 }
 
-module.exports.make = (key) => {
+module.exports.make = key => {
     iter = generateKey(key);
     iter.next();
 };

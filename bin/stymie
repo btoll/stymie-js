@@ -2,50 +2,54 @@
 
 'use strict';
 
-let argv = require('yargs')
-        .usage('Usage: stymie <command> [options]')
-        .example('stymie add', 'Adds a new entry')
-        .command('add', 'Add a new entry')
+const jcrypt = require('jcrypt');
+const stymie = require('../src/index');
+const util = require('../src/lib/util');
+const install = require('../src/lib/install');
+const inquirer = require('inquirer');
 
-        .example('stymie edit', 'Edits an entry')
-        .command('edit', 'Edit an entry')
+const argv = require('yargs')
+    .usage('Usage: stymie <command> [options]')
+    .example('stymie add', 'Adds a new entry')
+    .command('add', 'Add a new entry')
 
-        .example('stymie generate', 'Generates a diceware passphrase')
-        .command('generate', 'Generate a passphrase')
+    .example('stymie edit', 'Edits an entry')
+    .command('edit', 'Edit an entry')
 
-        .example('stymie get', 'Retrieves an entry')
-        .command('get', 'Get an entry')
+    .example('stymie generate', 'Generates a diceware passphrase')
+    .command('generate', 'Generate a passphrase')
 
-        .example('stymie has', 'Checks if the entry exists')
-        .command('has', 'Check if the entry exists')
+    .example('stymie get', 'Retrieves an entry')
+    .command('get', 'Get an entry')
 
-        .example('stymie init', 'Installs')
-        .command('init', 'Install the password file directory and config file')
+    .example('stymie has', 'Checks if the entry exists')
+    .command('has', 'Check if the entry exists')
 
-        .example('stymie list', 'Lists all entries')
-        .command('list', 'List all entries')
+    .example('stymie init', 'Installs')
+    .command('init', 'Install the password file directory and config file')
 
-        .example('stymie rm', 'Deletes an entry')
-        .command('rm', 'Delete an entry')
+    .example('stymie list', 'Lists all entries')
+    .command('list', 'List all entries')
 
-        .describe('field', 'Gets the specified key value from an entry (only with `get` command)')
+    .example('stymie rm', 'Deletes an entry')
+    .command('rm', 'Delete an entry')
 
-        .help('h')
-        .alias('h', 'help')
-        .argv,
-    install = require('../src/lib/install'),
-    command = argv._[0];
+    .describe('field', 'Gets the specified key value from an entry (only with `get` command)')
+
+    .help('h')
+    .alias('h', 'help')
+    .argv;
+
+const command = argv._[0];
 
 if (command === 'init') {
     install.install();
 } else {
-    let stymie = require('../src/index'),
-        util = require('../src/lib/util'),
-        env = process.env,
-        stymieDir = `${env.STYMIE || env.HOME}/.stymie.d`;
+    const env = process.env;
+    const stymieDir = `${env.STYMIE || env.HOME}/.stymie.d`;
 
     util.fileExists(`${stymieDir}/c`).then(file => {
-        require('jcrypt')(file, null, ['--decrypt'], true).then((data) => {
+        jcrypt(file, null, ['--decrypt'], true).then(data => {
             util.setGPGOptions(data);
 
             switch (command) {
@@ -72,10 +76,10 @@ if (command === 'init') {
                 default: util.logError('Bad command');
             }
         });
-    }).catch((err) => {
+    }).catch(err => {
         util.logWarning('It appears that stymie is not installed.\n');
 
-        require('inquirer').prompt([{
+        inquirer.prompt([{
             type: 'list',
             name: 'install',
             message: 'Do you wish to install now?:',
@@ -83,7 +87,7 @@ if (command === 'init') {
                 {name: 'Yes', value: true},
                 {name: 'No, I\'ll do it myself later.', value: false}
             ]
-        }], (answers) => {
+        }], answers => {
             if (!answers.install) {
                 util.logInfo('Run `bash scripts/postinstall.bash` to install.');
             } else {

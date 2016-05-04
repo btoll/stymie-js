@@ -1,15 +1,14 @@
 'use strict';
 
-let logger = require('logger'),
-    crypto = require('crypto'),
-    fs = require('fs'),
-    log, logError, logInfo, logSuccess, logWarning, gpgOptions;
-
-log = logger.log;
-logError = logger.error;
-logInfo = logger.info;
-logSuccess = logger.success;
-logWarning = logger.warn;
+const logger = require('logger');
+const crypto = require('crypto');
+const fs = require('fs');
+const log = logger.log;
+const logError = logger.error;
+const logInfo = logger.info;
+const logSuccess = logger.success;
+const logWarning = logger.warn;
+let gpgOptions;
 
 module.exports = {
     log: log,
@@ -18,7 +17,7 @@ module.exports = {
     logSuccess: logSuccess,
     logWarning: logWarning,
 
-    fileExists: (path) => {
+    fileExists: path => {
         return new Promise((resolve, reject) => {
             fs.stat(path, (err) => {
                 if (err) {
@@ -44,7 +43,7 @@ module.exports = {
         return arr;
     },
 
-    setGPGOptions: (data) => {
+    setGPGOptions: data => {
         gpgOptions = JSON.parse(data);
     },
 
@@ -56,7 +55,7 @@ module.exports = {
         return true;
     },
 
-    hashFilename: (file) => {
+    hashFilename: file => {
         if (!file) {
             return;
         }
@@ -64,7 +63,7 @@ module.exports = {
         return crypto.createHash(gpgOptions.hash).update(file).digest('hex');
     },
 
-    noBlanks: (input) => {
+    noBlanks: input => {
         let res = true;
 
         if (!input) {

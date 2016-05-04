@@ -2,21 +2,20 @@
 
 'use strict';
 
-let diceware = require('diceware'),
-    inquirer = require('inquirer'),
-    jcrypt = require('jcrypt'),
-    libKey = require('./lib/key'),
-    libFile = require('./lib/file'),
-    libUtil = require('./lib/util'),
-    log = libUtil.log,
-    logError = libUtil.logError,
-    logInfo = libUtil.logInfo,
-    logSuccess = libUtil.logSuccess,
-    env = process.env,
-    keyFile = `${env.STYMIE || env.HOME}/.stymie.d/k`,
-    stymie;
+const diceware = require('diceware');
+const inquirer = require('inquirer');
+const jcrypt = require('jcrypt');
+const libKey = require('./lib/key');
+const libFile = require('./lib/file');
+const libUtil = require('./lib/util');
+const log = libUtil.log;
+const logError = libUtil.logError;
+const logInfo = libUtil.logInfo;
+const logSuccess = libUtil.logSuccess;
+const env = process.env;
+const keyFile = `${env.STYMIE || env.HOME}/.stymie.d/k`;
 
-stymie = {
+const stymie = {
     add: key => {
         if (!key) {
             logError('No key name');
@@ -26,21 +25,21 @@ stymie = {
         libKey.make(key);
     },
 
-    addFile: key => {
-        if (!key) {
-            logError('No key name');
+    addFile: file => {
+        if (!file) {
+            logError('No file name');
             return;
         }
 
-        libFile.add(key);
+        libFile.add(file);
     },
 
     edit: key => {
         jcrypt(keyFile, null, ['--decrypt'], true)
         .then(data => {
-            let list = JSON.parse(data),
-                item = list[key],
-                prompts, hasChanged;
+            const list = JSON.parse(data);
+            const item = list[key];
+            let prompts, hasChanged;
 
             if (item) {
                 hasChanged = {
@@ -69,8 +68,8 @@ stymie = {
                 }
 
                 inquirer.prompt(prompts, answers => {
-                    let entry = answers.key,
-                        item = list[key];
+                    const entry = answers.key;
+                    let item = list[key];
 
                     if (entry !== key) {
                         // Remove old key.
@@ -121,8 +120,8 @@ stymie = {
     get: (key, field) => {
         jcrypt(keyFile, null, ['--decrypt'], true)
         .then(data => {
-            let list = JSON.parse(data),
-                item = list[key];
+            const list = JSON.parse(data);
+            const item = list[key];
 
             if (item) {
                 if (!field) {
@@ -133,7 +132,7 @@ stymie = {
                         }
                     }
                 } else {
-                    let f = item[field];
+                    const f = item[field];
 
                     if (!f) {
                         logError('No field found');
@@ -167,14 +166,13 @@ stymie = {
     list: () => {
         jcrypt(keyFile, null, ['--decrypt'], true)
         .then(data => {
-            let keys = Object.keys(JSON.parse(data)),
-                msg;
+            const keys = Object.keys(JSON.parse(data));
 
-            msg = !keys.length ?
-                'No installed keys' :
-                `Installed keys: ${keys.sort().join(', ')}`;
-
-            logInfo(msg);
+            logInfo(
+                !keys.length ?
+                    'No installed keys' :
+                    `Installed keys: ${keys.sort().join(', ')}`
+            );
         });
     },
 
@@ -183,7 +181,7 @@ stymie = {
     rm: key => {
         jcrypt(keyFile, null, ['--decrypt'], true)
         .then(data => {
-            let list = JSON.parse(data);
+            const list = JSON.parse(data);
 
             return new Promise((resolve, reject) => {
                 if (list[key]) {

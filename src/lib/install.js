@@ -1,10 +1,10 @@
 'use strict';
 
-let fs = require('fs'),
-    jcrypt = require('jcrypt'),
-    util = require('./util'),
-    logError = util.logError,
-    logSuccess = util.logSuccess;
+const fs = require('fs');
+const jcrypt = require('jcrypt');
+const util = require('./util');
+const logError = util.logError;
+const logSuccess = util.logSuccess;
 
 module.exports.install = () => {
     require('inquirer').prompt([{
@@ -17,14 +17,14 @@ module.exports.install = () => {
         name: 'envFile',
         message: 'We need to export a $STYMIE environment variable.\nName of shell startup file to which the new env var should be written:',
         default: '.bashrc',
-        when: (answers) => {
+        when: answers => {
             return answers.installDir !== '~';
         }
     }, {
         type: 'input',
         name: 'recipient',
         message: 'Enter the email address or key ID of your public key:',
-        validate: (input) => {
+        validate: input => {
             let res = true;
 
             if (!input) {
@@ -71,17 +71,17 @@ module.exports.install = () => {
         name: 'histignoreFile',
         message: 'We need to write the new $HISTIGNORE value.\nName of shell startup file to which it should be written:',
         default: '.bashrc',
-        when: (answers) => {
+        when: answers => {
             return answers.histignore;
         }
-    }], (answers) => {
-        let installDir = answers.installDir,
-            home = process.env.HOME,
-            armor = answers.armor,
-            recipient = answers.recipient,
-            sign = answers.sign,
-            arr = ['--encrypt', '-r', recipient],
-            stymieDir;
+    }], answers => {
+        const home = process.env.HOME;
+        const armor = answers.armor;
+        const recipient = answers.recipient;
+        const sign = answers.sign;
+        const arr = ['--encrypt', '-r', recipient];
+        let installDir = answers.installDir;
+        let stymieDir;
 
         if (armor) {
             arr.push('--armor');
@@ -110,12 +110,12 @@ module.exports.install = () => {
         }
 
         mkDir(stymieDir)
-        .then((data) => {
+        .then(data => {
             logSuccess(data);
 
             return mkDir(`${stymieDir}/s`);
         })
-        .then((data) => {
+        .then(data => {
             logSuccess(data);
 
             // Create config file.
@@ -134,7 +134,7 @@ module.exports.install = () => {
                 }
             }, true);
         })
-        .then((data) => {
+        .then(data => {
             logSuccess(data);
 
             // Create entry list file.
@@ -148,11 +148,11 @@ module.exports.install = () => {
                 }
             }, true);
         })
-        .then((data) => {
+        .then(data => {
             logSuccess(data);
 
             if (answers.histignore) {
-                let histignoreFile = `${home}/${answers.histignoreFile}`;
+                const histignoreFile = `${home}/${answers.histignoreFile}`;
 
                 return new Promise((resolve, reject) => {
                     fs.appendFile(histignoreFile, 'export HISTIGNORE="stymie *:$HISTIGNORE"\n', 'utf8', (err) => {
@@ -165,7 +165,7 @@ module.exports.install = () => {
                 });
             }
         })
-        .then((data) => {
+        .then(data => {
             // Note that `data` is undefined if not updating $HISTIGNORE.
             // TODO: is having a conditional in a #then a code smell?
             if (data) {
