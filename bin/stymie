@@ -29,7 +29,6 @@ let argv = require('yargs')
         .command('rm', 'Delete an entry')
 
         .describe('field', 'Gets the specified key value from an entry (only with `get` command)')
-        .describe('file', 'Operate on files')
 
         .help('h')
         .alias('h', 'help')
@@ -45,18 +44,31 @@ if (command === 'init') {
         env = process.env,
         stymieDir = `${env.STYMIE || env.HOME}/.stymie.d`;
 
-    util.fileExists(`${stymieDir}/c`).then((file) => {
+    util.fileExists(`${stymieDir}/c`).then(file => {
         require('jcrypt')(file, null, ['--decrypt'], true).then((data) => {
             util.setGPGOptions(data);
 
             switch (command) {
-                case 'add': stymie.add(argv._[1], argv.file); break;
-                case 'edit': stymie.edit(argv._[1], argv.file); break;
+                case 'add': stymie.add(argv._[1]); break;
+                case 'add-file': stymie.addFile(argv._[1]); break;
+
+                case 'edit': stymie.edit(argv._[1]); break;
+                case 'edit-file': stymie.editFile(argv._[1]); break;
+
                 case 'generate': stymie.generate(); break;
-                case 'get': stymie.get(argv._[1], argv.file, argv.field); break;
-                case 'has': stymie.has(argv._[1], argv.file); break;
-                case 'list': stymie.list(argv.file); break;
-                case 'rm': stymie.rm(argv._[1], argv.file); break;
+
+                case 'get': stymie.get(argv._[1], argv.field); break;
+                case 'get-file': stymie.getFile(argv._[1], argv.field); break;
+
+                case 'has': stymie.has(argv._[1]); break;
+                case 'has-file': stymie.hasFile(argv._[1]); break;
+
+                case 'list': stymie.list(); break;
+                case 'list-file': stymie.listFile(); break;
+
+                case 'rm': stymie.rm(argv._[1]); break;
+                case 'rm-file': stymie.rmFile(argv._[1]); break;
+
                 default: util.logError('Bad command');
             }
         });
