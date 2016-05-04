@@ -4,8 +4,8 @@
 
 const jcrypt = require('jcrypt');
 const stymie = require('../src/index');
-const util = require('../src/lib/util');
-const install = require('../src/lib/install');
+const util = require('../src/util');
+const install = require('../src/install');
 const inquirer = require('inquirer');
 
 const argv = require('yargs')
