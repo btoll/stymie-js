@@ -39,8 +39,8 @@ module.exports.install = () => {
         name: 'armor',
         message: 'Select how GPG/PGP will encrypt the password files:',
         choices: [
-            {name: 'Armored ASCII Text', value: true},
-            {name: 'Binary', value: false}
+            {name: 'Binary', value: true},
+            {name: 'Armored ASCII Text', value: false}
         ],
         default: false
     }, {
@@ -97,26 +97,26 @@ module.exports.install = () => {
 
         stymieDir = `${installDir}/.stymie.d`;
 
-        function mkDir(d) {
+        function mkDir(dir) {
             return new Promise((resolve, reject) => {
-                fs.mkdir(d, 0o700, (err) => {
+                fs.mkdir(dir, 0o700, err => {
                     if (err) {
                         reject(err);
                     } else {
-                        resolve(`Created directory ${d}`);
+                        resolve(dir);
                     }
                 });
             });
         }
 
         mkDir(stymieDir)
-        .then(data => {
-            logSuccess(data);
+        .then(dir => {
+            logSuccess(`Created project directory ${dir}`);
 
             return mkDir(`${stymieDir}/s`);
         })
-        .then(data => {
-            logSuccess(data);
+        .then(dir => {
+            logSuccess(`Created encrypted entries directory ${dir}`);
 
             // Create config file.
             return jcrypt.stream(JSON.stringify({
@@ -134,8 +134,8 @@ module.exports.install = () => {
                 }
             }, true);
         })
-        .then(data => {
-            logSuccess(data);
+        .then(file => {
+            logSuccess(`Created encrypted config file ${file}`);
 
             // Create entry list file.
             return jcrypt.stream(JSON.stringify({}, null, 4), `${stymieDir}/k`, {
@@ -148,8 +148,8 @@ module.exports.install = () => {
                 }
             }, true);
         })
-        .then(data => {
-            logSuccess(data);
+        .then(file => {
+            logSuccess(`Created encrypted entries list file ${file}`);
 
             if (answers.histignore) {
                 const histignoreFile = `${home}/${answers.histignoreFile}`;
