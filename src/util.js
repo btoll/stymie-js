@@ -7,7 +7,7 @@ const log = logger.log;
 const logError = logger.error;
 const logInfo = logger.info;
 const logSuccess = logger.success;
-const logWarning = logger.warn;
+const logWarn = logger.warn;
 let gpgOptions;
 
 module.exports = {
@@ -15,7 +15,7 @@ module.exports = {
     logError: logError,
     logInfo: logInfo,
     logSuccess: logSuccess,
-    logWarning: logWarning,
+    logWarn: logWarn,
 
     fileExists: path => {
         return new Promise((resolve, reject) => {
@@ -78,7 +78,7 @@ module.exports = {
         let res = true;
 
         if ((current !== input) && list[input]) {
-            logWarning('Key already exists');
+            logWarn('Key already exists');
             res = false;
         }
 

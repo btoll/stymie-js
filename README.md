@@ -1,6 +1,6 @@
-[![Build Status](https://travis-ci.org/btoll/stymie.svg?branch=master)](https://travis-ci.org/btoll/stymie)
+# Stymie
 
-## About
+[![Build Status](https://travis-ci.org/btoll/stymie.svg?branch=master)](https://travis-ci.org/btoll/stymie)
 
 ## Features
 
@@ -41,14 +41,25 @@ Only Linux and OS X are supported at this time. There are no plans to support Wi
 - Set `$EDITOR` environment variable to preferred editor. Place editor configs in the `editors/` directory. See the [example for Vim](editors/vim.json).
 
 ## Examples
+
+- Create the `example.com` key:
+```
+stymie add example.com
+```
+
 - Add an encrypted file with the key name `secrets`:
 ```
 stymie add-file secrets
 ```
 
-- Create the `example.com` key:
+- Edit the `example.com` key:
 ```
-stymie add example.com
+stymie edit example.com
+```
+
+- Delete the file with the key name `secrets`:
+```
+stymie rm-file secrets
 ```
 
 - Get just the `username` field value from the `example.com` key:

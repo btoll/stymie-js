@@ -77,7 +77,7 @@ if (command === 'init') {
             }
         });
     }).catch(err => {
-        util.logWarning('It appears that stymie is not installed.\n');
+        util.logWarn('It appears that stymie is not installed.\n');
 
         inquirer.prompt([{
             type: 'list',

@@ -1,6 +1,7 @@
 'use strict';
 
 const fs = require('fs');
+const cp = require('child_process');
 const jcrypt = require('jcrypt');
 const util = require('./util');
 const logError = util.logError;
@@ -39,8 +40,8 @@ module.exports.install = () => {
         name: 'armor',
         message: 'Select how GPG/PGP will encrypt the password files:',
         choices: [
-            {name: 'Binary', value: true},
-            {name: 'Armored ASCII Text', value: false}
+            {name: 'Binary', value: false},
+            {name: 'Armored ASCII Text', value: true}
         ],
         default: false
     }, {
@@ -176,7 +177,20 @@ module.exports.install = () => {
                 // require('child_process').spawn('source', [histignoreFile]);
             }
         })
-        .catch(logError);
+        .catch(err => {
+            logError(err);
+            util.logWarn('Cleaning up, install aborted...');
+
+            const rm = cp.spawn('rm', ['-r', '-f', stymieDir]);
+
+            rm.on('close', code => {
+                if (code !== 0) {
+                    logError('Something terrible happened, the project directory could not be removed!');
+                } else {
+                    util.logInfo('The project directory has been removed');
+                }
+            });
+        });
     });
 };
 
