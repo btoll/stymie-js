@@ -48,7 +48,7 @@ if (command === 'init') {
     const env = process.env;
     const stymieDir = `${env.STYMIE || env.HOME}/.stymie.d`;
 
-    util.fileExists(`${stymieDir}/c`).then(file => {
+    util.fileExists(`${stymieDir}/c`).then(file =>
         jcrypt(file, null, ['--decrypt'], true).then(data => {
             util.setGPGOptions(data);
 
@@ -75,8 +75,8 @@ if (command === 'init') {
 
                 default: util.logError('Bad command');
             }
-        });
-    }).catch(err => {
+        })
+    ).catch(err => {
         util.logWarn('It appears that stymie is not installed.\n');
 
         inquirer.prompt([{

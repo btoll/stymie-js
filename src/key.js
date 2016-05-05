@@ -151,9 +151,7 @@ function makeKey(entry) {
             }
         }, true);
     })
-    .then(() => {
-        logSuccess('Key created successfully');
-    })
+    .then(() => logSuccess('Key created successfully'))
     .catch(logError);
 }
 

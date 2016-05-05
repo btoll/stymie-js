@@ -39,9 +39,9 @@ const stymie = {
         // This seems counter-intuitive because the resolve and reject operations
         // are reversed, but this is b/c the success case is when the file does not
         // exist (and thus will throw an exception).
-        util.fileExists(`${keyDir}/${hashedFilename}`).then(() => {
-            logError('File already exists');
-        }).catch(() => {
+        util.fileExists(`${keyDir}/${hashedFilename}`)
+        .then(() => logError('File already exists'))
+        .catch(() => {
             jcrypt.stream(key, `${keyDir}/${hashedFilename}`, {
                 gpg: util.getGPGArgs(),
                 file: {
@@ -51,9 +51,7 @@ const stymie = {
                     mode: 0o0600
                 }
             }, true)
-            .then(() => {
-                logSuccess('File created successfully');
-            })
+            .then(() => logSuccess('File created successfully'))
             .catch(logError);
         });
     },
@@ -82,20 +80,20 @@ const stymie = {
     get: key => {
         const hashedFilename = util.hashFilename(key);
 
-        util.fileExists(`${keyDir}/${hashedFilename}`).then(file => {
+        util.fileExists(`${keyDir}/${hashedFilename}`)
+        .then(file =>
             // Pipe to stdout.
             jcrypt.stream(file, null, ['--decrypt'])
-            .catch(logError);
-        })
+            .catch(logError)
+        )
         .catch(logError);
     },
 
     has: key => {
         const hashedFilename = util.hashFilename(key);
 
-        util.fileExists(`${keyDir}/${hashedFilename}`).then(() => {
-            logInfo('File exists');
-        })
+        util.fileExists(`${keyDir}/${hashedFilename}`)
+        .then(() => logInfo('File exists'))
         .catch(logError);
     },
 
@@ -127,7 +125,8 @@ const stymie = {
             const hashedFilename = util.hashFilename(key);
             const path = `${keyDir}/${hashedFilename}`;
 
-            util.fileExists(path).then(() => {
+            util.fileExists(path)
+            .then(() =>
                 inquirer.prompt([{
                     type: 'list',
                     name: 'rm',
@@ -144,8 +143,9 @@ const stymie = {
                     } else {
                         logInfo('No removal');
                     }
-                });
-            }).catch(logError);
+                })
+            )
+            .catch(logError);
         };
     })()
 };

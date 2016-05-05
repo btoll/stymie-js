@@ -34,7 +34,7 @@ const stymie = {
         libFile.add(file);
     },
 
-    edit: key => {
+    edit: key =>
         jcrypt(keyFile, null, ['--decrypt'], true)
         .then(data => {
             const list = JSON.parse(data);
@@ -98,9 +98,7 @@ const stymie = {
                                 mode: 0o0600
                             }
                         }, true)
-                        .then(() => {
-                            logSuccess('Key has been updated');
-                        })
+                        .then(() => logSuccess('Key has been updated'))
                         .catch(logError);
                     } else {
                         logInfo('No change');
@@ -110,14 +108,13 @@ const stymie = {
                 logInfo('No matching key');
             }
         })
-        .catch(logError);
-    },
+        .catch(logError),
 
     editFile: key => libFile.edit(key),
 
     generate: () => log(diceware.generate()),
 
-    get: (key, field) => {
+    get: (key, field) =>
         jcrypt(keyFile, null, ['--decrypt'], true)
         .then(data => {
             const list = JSON.parse(data);
@@ -144,26 +141,24 @@ const stymie = {
                 logInfo('No matching key');
             }
         })
-        .catch(logError);
-    },
+        .catch(logError),
 
     getFile: key => libFile.get(key),
 
-    has: key => {
+    has: key =>
         jcrypt(keyFile, null, ['--decrypt'], true)
-        .then(data => {
+        .then(data =>
             logInfo(
                 JSON.parse(data)[key] ?
                     'Key exists' :
                     'No matching key'
-            );
-        })
-        .catch(logError);
-    },
+            )
+        )
+        .catch(logError),
 
     hasFile: key => libFile.has(key),
 
-    list: () => {
+    list: () =>
         jcrypt(keyFile, null, ['--decrypt'], true)
         .then(data => {
             const keys = Object.keys(JSON.parse(data));
@@ -173,12 +168,11 @@ const stymie = {
                     'No installed keys' :
                     `Installed keys: ${keys.sort().join(', ')}`
             );
-        });
-    },
+        }),
 
     listFile: () => logInfo('Not implemented'),
 
-    rm: key => {
+    rm: key =>
         jcrypt(keyFile, null, ['--decrypt'], true)
         .then(data => {
             const list = JSON.parse(data);
@@ -208,8 +202,8 @@ const stymie = {
                 }
             });
         })
-        .then(list => {
-            return jcrypt.stream(JSON.stringify(list, null, 4), keyFile, {
+        .then(list =>
+            jcrypt.stream(JSON.stringify(list, null, 4), keyFile, {
                 gpg: libUtil.getGPGArgs(),
                 file: {
                     flags: 'w',
@@ -218,13 +212,10 @@ const stymie = {
                     mode: 0o0600
                 }
             }, true)
-            .then(() => {
-                logSuccess('Key has been removed');
-            })
-            .catch(logError);
-        })
-        .catch(logError);
-    },
+            .then(() => logSuccess('Key has been removed'))
+            .catch(logError)
+        )
+        .catch(logError),
 
     rmFile: key => libFile.rm(key)
 };

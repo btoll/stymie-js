@@ -17,8 +17,8 @@ module.exports = {
     logSuccess: logSuccess,
     logWarn: logWarn,
 
-    fileExists: path => {
-        return new Promise((resolve, reject) => {
+    fileExists: path =>
+        new Promise((resolve, reject) => {
             fs.stat(path, (err) => {
                 if (err) {
                     reject('No matching entry');
@@ -26,8 +26,7 @@ module.exports = {
                     resolve(path);
                 }
             });
-        });
-    },
+        }),
 
     getGPGArgs: () => {
         let arr = ['--encrypt', '-r', gpgOptions.recipient];
@@ -43,9 +42,7 @@ module.exports = {
         return arr;
     },
 
-    setGPGOptions: data => {
-        gpgOptions = JSON.parse(data);
-    },
+    setGPGOptions: data => gpgOptions = JSON.parse(data),
 
     hasChanged: (hasChanged, originalValue, input) => {
         if (originalValue !== input) {

@@ -7,7 +7,7 @@ const util = require('./util');
 const logError = util.logError;
 const logSuccess = util.logSuccess;
 
-module.exports.install = () => {
+module.exports.install = () =>
     require('inquirer').prompt([{
         type: 'input',
         name: 'installDir',
@@ -72,9 +72,7 @@ module.exports.install = () => {
         name: 'histignoreFile',
         message: 'We need to write the new $HISTIGNORE value.\nName of shell startup file to which it should be written:',
         default: '.bashrc',
-        when: answers => {
-            return answers.histignore;
-        }
+        when: answers => answers.histignore
     }], answers => {
         const home = process.env.HOME;
         const armor = answers.armor;
@@ -155,15 +153,15 @@ module.exports.install = () => {
             if (answers.histignore) {
                 const histignoreFile = `${home}/${answers.histignoreFile}`;
 
-                return new Promise((resolve, reject) => {
+                return new Promise((resolve, reject) =>
                     fs.appendFile(histignoreFile, 'export HISTIGNORE="stymie *:$HISTIGNORE"\n', 'utf8', (err) => {
                         if (err) {
                             reject(err);
                         } else {
                             resolve('Updated $HISTIGNORE');
                         }
-                    });
-                });
+                    })
+                );
             }
         })
         .then(data => {
@@ -192,5 +190,4 @@ module.exports.install = () => {
             });
         });
     });
-};
 
