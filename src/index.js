@@ -1,5 +1,3 @@
-// TODO: are nested .catch()s needed?
-
 'use strict';
 
 const diceware = require('diceware');
@@ -11,6 +9,7 @@ const libUtil = require('./util');
 const log = libUtil.log;
 const logError = libUtil.logError;
 const logInfo = libUtil.logInfo;
+const logRaw = libUtil.logRaw;
 const logSuccess = libUtil.logSuccess;
 const env = process.env;
 const keyFile = `${env.STYMIE || env.HOME}/.stymie.d/k`;
@@ -38,10 +37,10 @@ const stymie = {
         jcrypt(keyFile, null, ['--decrypt'], true)
         .then(data => {
             const list = JSON.parse(data);
-            const item = list[key];
+            const entry = list[key];
             let prompts, hasChanged;
 
-            if (item) {
+            if (entry) {
                 hasChanged = {
                     changed: false
                 };
@@ -54,14 +53,13 @@ const stymie = {
                     validate: libUtil.noDuplicates.bind(null, key, list)
                 }];
 
-                // TODO: Use iterator here.
-                for (let n in item) {
-                    if (item.hasOwnProperty(n)) {
+                for (const n in entry) {
+                    if (entry.hasOwnProperty(n)) {
                         prompts.push({
                             type: 'input',
                             name: n,
                             message: `Edit ${n}:`,
-                            default: item[n],
+                            default: entry[n],
                             validate: libUtil.hasChanged.bind(null, hasChanged, n)
                         });
                     }
@@ -82,8 +80,7 @@ const stymie = {
                     }
 
                     if (hasChanged.changed) {
-                        // TODO: Iterator.
-                        for (let n in answers) {
+                        for (const n in answers) {
                             if (answers.hasOwnProperty(n) && n !== 'key') {
                                 item[n] = answers[n];
                             }
@@ -118,23 +115,22 @@ const stymie = {
         jcrypt(keyFile, null, ['--decrypt'], true)
         .then(data => {
             const list = JSON.parse(data);
-            const item = list[key];
+            const entry = list[key];
 
-            if (item) {
+            if (entry) {
                 if (!field) {
-                    // TODO: Iterator.
-                    for (let n in item) {
-                        if (item.hasOwnProperty(n) && n !== 'key') {
-                            log(`${n}: ${item[n]}`);
+                    for (const n in entry) {
+                        if (entry.hasOwnProperty(n) && n !== 'key') {
+                            logRaw(`${n}: ${entry[n]}`);
                         }
                     }
                 } else {
-                    const f = item[field];
+                    const f = entry[field];
 
                     if (!f) {
                         logError('No field found');
                     } else {
-                        log(f);
+                        logRaw(f);
                     }
                 }
             } else {

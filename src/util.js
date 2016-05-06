@@ -3,18 +3,16 @@
 const logger = require('logger');
 const crypto = require('crypto');
 const fs = require('fs');
-const log = logger.log;
 const logError = logger.error;
-const logInfo = logger.info;
-const logSuccess = logger.success;
 const logWarn = logger.warn;
 let gpgOptions;
 
 module.exports = {
-    log: log,
+    log: logger.log,
     logError: logError,
-    logInfo: logInfo,
-    logSuccess: logSuccess,
+    logInfo: logger.info,
+    logRaw: logger.raw,
+    logSuccess: logger.success,
     logWarn: logWarn,
 
     fileExists: path =>
