@@ -34,6 +34,7 @@ const argv = require('yargs')
     .example('stymie rm', 'Deletes an entry')
     .command('rm', 'Delete an entry')
 
+    .alias('f', 'field')
     .describe('field', 'Gets the specified key value from an entry (only with `get` command)')
 
     .help('h')
