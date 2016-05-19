@@ -78,6 +78,7 @@ if (command === 'init') {
             }
         })
     ).catch(err => {
+        // TODO: Canceling GPG when asking for passphrase will get here, THIS IS NOT GOOD!
         util.logWarn('It appears that stymie is not installed.\n');
 
         inquirer.prompt([{
