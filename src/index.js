@@ -227,7 +227,7 @@ const stymie = {
     // on the CLI (see `bin/stymie`). The intent is then to redefine the method with the value of
     // `strip` partially applied.  This will save us from having to always pass through the value
     // of `strip` as a function parameter.
-    stripped: strip => {
+    stripped: strip =>
         stymie.stripped = field => {
             let f = field;
 
@@ -236,8 +236,7 @@ const stymie = {
             }
 
             return f;
-        };
-    }
+        }
 };
 
 module.exports = stymie;

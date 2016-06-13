@@ -11,15 +11,14 @@ const logError = util.logError;
 const logInfo = util.logInfo;
 const logSuccess = util.logSuccess;
 const env = process.env;
+const cwd = process.cwd();
 const keyDir = `${env.STYMIE || env.HOME}/.stymie.d/s`;
 
 function openEditor(file, callback) {
     const editor = env.EDITOR || 'vim';
-    // Note: Requiring json will also auto-parse it.
-    const args = require(`../../editors/${editor}`);
+    const args = require(`${cwd}/editors/${editor}`);
 
-    // The editor modules will only contain the CLI args
-    // so we need to push on the filename.
+    // The editor modules will only contain the CLI args so we need to push on the filename.
     args.push(file);
 
     cp.spawn(editor, args, {
