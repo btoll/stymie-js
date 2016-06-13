@@ -40,7 +40,7 @@ const stymie = {
         // exist (and thus will throw an exception).
         util.fileExists(`${keyDir}/${hashedFilename}`)
         .then(() => logError('File already exists'))
-        .catch(() => {
+        .catch(() =>
             jcrypt.stream(key, `${keyDir}/${hashedFilename}`, {
                 gpg: util.getGPGArgs(),
                 file: {
@@ -51,28 +51,26 @@ const stymie = {
                 }
             }, true)
             .then(() => logSuccess('File created successfully'))
-            .catch(logError);
-        });
+            .catch(logError)
+        );
     },
 
     edit: key => {
         const hashedFilename = util.hashFilename(key);
         const path = `${keyDir}/${hashedFilename}`;
 
-        util.fileExists(path).then(() => {
+        util.fileExists(path).then(() =>
             jcrypt(path, null, ['--decrypt'])
-            .then(() => {
-                openEditor(path, () => {
+            .then(() =>
+                openEditor(path, () =>
                     // Re-encrypt once done.
                     jcrypt(path, null, util.getGPGArgs())
-                    .then(() => {
-                        logInfo('Re-encrypting and closing the file');
-                    })
-                    .catch(logError);
-                });
-            })
-            .catch(logError);
-        })
+                    .then(() => logInfo('Re-encrypting and closing the file'))
+                    .catch(logError)
+                )
+            )
+            .catch(logError)
+        )
         .catch(logError);
     },
 
@@ -103,7 +101,7 @@ const stymie = {
                     let rm;
 
                     if (err) {
-                        logInfo('You\'re OS doesn\`t have the `shred` utility installed, falling back to `rm`...');
+                        logInfo('Your OS doesn\`t have the `shred` utility installed, falling back to `rm`...');
                         rm = cp.spawn('rm', [file]);
                     } else {
                         rm = cp.spawn('shred', ['--zero', '--remove', file]);

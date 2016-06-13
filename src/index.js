@@ -25,6 +25,7 @@ const stymie = {
         libKey.make(key);
     },
 
+    // TODO: Do the file check in libFile?
     addFile: file => {
         if (!file) {
             logError('No file name');
@@ -108,7 +109,7 @@ const stymie = {
         })
         .catch(logError),
 
-    editFile: key => libFile.edit(key),
+    editFile: libFile.edit,
 
     generate: () => log(diceware.generate()),
 
@@ -147,7 +148,7 @@ const stymie = {
         .catch(logError),
 
     // TODO: Pass all arguments here.
-    getFile: key => libFile.get(key),
+    getFile: libFile.get,
 
     has: key =>
         jcrypt(keyFile, null, ['--decrypt'], true)
@@ -160,7 +161,7 @@ const stymie = {
         )
         .catch(logError),
 
-    hasFile: key => libFile.has(key),
+    hasFile: libFile.has,
 
     list: () =>
         jcrypt(keyFile, null, ['--decrypt'], true)
@@ -221,7 +222,7 @@ const stymie = {
         )
         .catch(logError),
 
-    rmFile: key => libFile.rm(key),
+    rmFile: libFile.rm,
 
     // This method is expected to be called immediately with the value of `strip` that was passed
     // on the CLI (see `bin/stymie`). The intent is then to redefine the method with the value of
