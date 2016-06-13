@@ -13,6 +13,7 @@ const logRaw = libUtil.logRaw;
 const logSuccess = libUtil.logSuccess;
 const env = process.env;
 const keyFile = `${env.STYMIE || env.HOME}/.stymie.d/k`;
+const reWhitespace = /\s/g;
 
 const stymie = {
     add: key => {
@@ -121,7 +122,7 @@ const stymie = {
                 if (!field) {
                     for (const n in entry) {
                         if (entry.hasOwnProperty(n) && n !== 'key') {
-                            logRaw(`${n}: ${entry[n]}`);
+                            logRaw(`${n}: ${stymie.stripped(entry[n])}`);
                         }
                     }
                 } else {
@@ -130,7 +131,13 @@ const stymie = {
                     if (!f) {
                         logError('No field found');
                     } else {
-                        logRaw(f);
+                        // Don't log here b/c we don't want the newline char! This is best when
+                        // copying to clipboard, i.e.:
+                        //
+                        //      stymie get example.com -f password -s | pbcopy
+                        //
+                        // To view the logged output, get the whole entry (don't specify a `field`).
+                        process.stdout.write(stymie.stripped(f));
                     }
                 }
             } else {
@@ -139,6 +146,7 @@ const stymie = {
         })
         .catch(logError),
 
+    // TODO: Pass all arguments here.
     getFile: key => libFile.get(key),
 
     has: key =>
@@ -213,7 +221,23 @@ const stymie = {
         )
         .catch(logError),
 
-    rmFile: key => libFile.rm(key)
+    rmFile: key => libFile.rm(key),
+
+    // This method is expected to be called immediately with the value of `strip` that was passed
+    // on the CLI (see `bin/stymie`). The intent is then to redefine the method with the value of
+    // `strip` partially applied.  This will save us from having to always pass through the value
+    // of `strip` as a function parameter.
+    stripped: strip => {
+        stymie.stripped = field => {
+            let f = field;
+
+            if (strip) {
+                f = field.replace(reWhitespace, '');
+            }
+
+            return f;
+        };
+    }
 };
 
 module.exports = stymie;

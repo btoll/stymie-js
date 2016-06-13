@@ -37,11 +37,16 @@ const argv = require('yargs')
     .alias('f', 'field')
     .describe('field', 'Gets the specified key value from an entry (only with `get` command)')
 
+    .alias('s', 'strip')
+    .describe('strip', 'Strips any whitespace from a field (only with `get` command)')
+
     .help('h')
     .alias('h', 'help')
     .argv;
 
 const command = argv._[0];
+
+stymie.stripped(!!argv.strip);
 
 if (command === 'init') {
     install.install();
