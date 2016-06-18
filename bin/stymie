@@ -30,6 +30,7 @@ const argv = require('yargs')
 
     .example('stymie list', 'Lists all entries')
     .command('list', 'List all entries')
+    .command('ls', 'Alias of `list`')
 
     .example('stymie rm', 'Deletes an entry')
     .command('rm', 'Delete an entry')
@@ -73,7 +74,10 @@ if (command === 'init') {
                 case 'has': stymie.has(argv._[1]); break;
                 case 'has-file': stymie.hasFile(argv._[1]); break;
 
-                case 'list': stymie.list(); break;
+                case 'list':
+                case 'ls':
+                    stymie.list();
+                    break;
                 case 'list-file': stymie.listFile(); break;
 
                 case 'rm': stymie.rm(argv._[1]); break;
