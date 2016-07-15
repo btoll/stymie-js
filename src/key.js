@@ -77,17 +77,15 @@ function getCredentials(key) {
                 name: 'password',
                 message: 'Enter password:',
                 validate: util.noBlanks,
-                when: answers => {
-                    return !answers.generatePassword;
-                }
-            }], answers => {
+                when: answers => !answers.generatePassword
+            }], answers =>
                 makePassphrase({
                     key: key,
                     url: answers.url,
                     username: answers.username,
                     password: answers.password
-                });
-            });
+                })
+            );
         }
     })
     .catch(logError);
@@ -107,17 +105,13 @@ function getFields(entry) {
         name: 'name',
         message: 'Name:',
         validate: util.noBlank,
-        when: answers => {
-            return answers.newField;
-        }
+        when: answers => answers.newField
     }, {
         type: 'input',
         name: 'value',
         message: 'Value:',
         validate: util.noBlank,
-        when: answers => {
-            return answers.newField;
-        }
+        when: answers => answers.newField
     }], answers => {
         if (!answers.newField) {
             iter.next(entry);

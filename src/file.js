@@ -96,7 +96,7 @@ const stymie = {
 
     rm: (() => {
         function rm(file) {
-            return new Promise((resolve, reject) => {
+            return new Promise((resolve, reject) =>
                 which('shred', err => {
                     let rm;
 
@@ -114,8 +114,8 @@ const stymie = {
                             resolve('The file has been removed');
                         }
                     });
-                });
-            });
+                })
+            );
         }
 
         return key => {

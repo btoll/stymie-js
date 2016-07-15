@@ -18,9 +18,7 @@ module.exports.install = () =>
         name: 'envFile',
         message: 'We need to export a $STYMIE environment variable.\nName of shell startup file to which the new env var should be written:',
         default: '.bashrc',
-        when: answers => {
-            return answers.installDir !== '~';
-        }
+        when: answers => answers.installDir !== '~'
     }, {
         type: 'input',
         name: 'recipient',
@@ -97,15 +95,15 @@ module.exports.install = () =>
         stymieDir = `${installDir}/.stymie.d`;
 
         function mkDir(dir) {
-            return new Promise((resolve, reject) => {
+            return new Promise((resolve, reject) =>
                 fs.mkdir(dir, 0o700, err => {
                     if (err) {
                         reject(err);
                     } else {
                         resolve(dir);
                     }
-                });
-            });
+                })
+            );
         }
 
         mkDir(stymieDir)
