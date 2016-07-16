@@ -16,24 +16,9 @@ const keyFile = `${env.STYMIE || env.HOME}/.stymie.d/k`;
 const reWhitespace = /\s/g;
 
 const stymie = {
-    add: key => {
-        if (!key) {
-            logError('No key name');
-            return;
-        }
+    add: libKey.make,
 
-        libKey.make(key);
-    },
-
-    // TODO: Do the file check in libFile?
-    addFile: file => {
-        if (!file) {
-            logError('No file name');
-            return;
-        }
-
-        libFile.add(file);
-    },
+    addFile: libFile.add,
 
     edit: key =>
         jcrypt(keyFile, null, ['--decrypt'], true)

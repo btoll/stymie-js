@@ -150,6 +150,11 @@ function makeKey(entry) {
 }
 
 module.exports.make = key => {
+    if (!key) {
+        logError('No key name');
+        return;
+    }
+
     iter = generateKey(key);
     iter.next();
 };
