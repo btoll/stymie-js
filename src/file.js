@@ -26,7 +26,7 @@ function openEditor(file, callback) {
     }).on('exit', callback);
 }
 
-const stymie = {
+const file = {
     add: key => {
         if (!key) {
             logError('Must supply a file name');
@@ -147,5 +147,5 @@ const stymie = {
     })()
 };
 
-module.exports = stymie;
+module.exports = file;
 

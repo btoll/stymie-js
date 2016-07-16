@@ -3,7 +3,8 @@
 'use strict';
 
 const jcrypt = require('jcrypt');
-const stymie = require('../src/index');
+const key = require('../src/key');
+const file = require('../src/file');
 const util = require('../src/util');
 const install = require('../src/install');
 const inquirer = require('inquirer');
@@ -47,7 +48,7 @@ const argv = require('yargs')
 
 const command = argv._[0];
 
-stymie.stripped(!!argv.strip);
+key.stripped(!!argv.strip);
 
 if (command === 'init') {
     install.install();
@@ -55,33 +56,33 @@ if (command === 'init') {
     const env = process.env;
     const stymieDir = `${env.STYMIE || env.HOME}/.stymie.d`;
 
-    util.fileExists(`${stymieDir}/c`).then(file =>
-        jcrypt(file, null, ['--decrypt'], true).then(data => {
+    util.fileExists(`${stymieDir}/c`).then(f =>
+        jcrypt(f, null, ['--decrypt'], true).then(data => {
             util.setGPGOptions(data);
 
             switch (command) {
-                case 'add': stymie.add(argv._[1]); break;
-                case 'add-file': stymie.addFile(argv._[1]); break;
+                case 'add': key.add(argv._[1]); break;
+                case 'add-file': file.add(argv._[1]); break;
 
-                case 'edit': stymie.edit(argv._[1]); break;
-                case 'edit-file': stymie.editFile(argv._[1]); break;
+                case 'edit': key.edit(argv._[1]); break;
+                case 'edit-file': file.edit(argv._[1]); break;
 
-                case 'generate': stymie.generate(); break;
+                case 'generate': key.generate(); break;
 
-                case 'get': stymie.get(argv._[1], argv.field); break;
-                case 'get-file': stymie.getFile(argv._[1], argv.field); break;
+                case 'get': key.get(argv._[1], argv.field); break;
+                case 'get-file': file.get(argv._[1], argv.field); break;
 
-                case 'has': stymie.has(argv._[1]); break;
-                case 'has-file': stymie.hasFile(argv._[1]); break;
+                case 'has': key.has(argv._[1]); break;
+                case 'has-file': file.has(argv._[1]); break;
 
                 case 'list':
                 case 'ls':
-                    stymie.list();
+                    key.list();
                     break;
-                case 'list-file': stymie.listFile(); break;
+                case 'list-file': file.list(); break;
 
-                case 'rm': stymie.rm(argv._[1]); break;
-                case 'rm-file': stymie.rmFile(argv._[1]); break;
+                case 'rm': key.rm(argv._[1]); break;
+                case 'rm-file': file.rm(argv._[1]); break;
 
                 default: util.logError('Bad command');
             }

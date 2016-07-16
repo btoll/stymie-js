@@ -4,7 +4,6 @@ const diceware = require('diceware');
 const inquirer = require('inquirer');
 const jcrypt = require('jcrypt');
 const generateEntry = require('./generateEntry');
-const libFile = require('./file');
 const libUtil = require('./util');
 const log = libUtil.log;
 const logError = libUtil.logError;
@@ -15,10 +14,8 @@ const env = process.env;
 const keyFile = `${env.STYMIE || env.HOME}/.stymie.d/k`;
 const reWhitespace = /\s/g;
 
-const stymie = {
+const key = {
     add: generateEntry,
-
-    addFile: libFile.add,
 
     edit: key =>
         jcrypt(keyFile, null, ['--decrypt'], true)
@@ -94,21 +91,19 @@ const stymie = {
         })
         .catch(logError),
 
-    editFile: libFile.edit,
-
     generate: () => log(diceware.generate()),
 
-    get: (key, field) =>
+    get: (needle, field) =>
         jcrypt(keyFile, null, ['--decrypt'], true)
         .then(data => {
             const list = JSON.parse(data);
-            const entry = list[key];
+            const entry = list[needle];
 
             if (entry) {
                 if (!field) {
                     for (const n in entry) {
-                        if (entry.hasOwnProperty(n) && n !== 'key') {
-                            logRaw(`${n}: ${stymie.stripped(entry[n])}`);
+                        if (entry.hasOwnProperty(n) && n !== 'needle') {
+                            logRaw(`${n}: ${key.stripped(entry[n])}`);
                         }
                     }
                 } else {
@@ -123,7 +118,7 @@ const stymie = {
                         //      stymie get example.com -f password -s | pbcopy
                         //
                         // To view the logged output, get the whole entry (don't specify a `field`).
-                        process.stdout.write(stymie.stripped(f));
+                        process.stdout.write(key.stripped(f));
                     }
                 }
             } else {
@@ -131,9 +126,6 @@ const stymie = {
             }
         })
         .catch(logError),
-
-    // TODO: Pass all arguments here.
-    getFile: libFile.get,
 
     has: key =>
         jcrypt(keyFile, null, ['--decrypt'], true)
@@ -146,8 +138,6 @@ const stymie = {
         )
         .catch(logError),
 
-    hasFile: libFile.has,
-
     list: () =>
         jcrypt(keyFile, null, ['--decrypt'], true)
         .then(data => {
@@ -159,8 +149,6 @@ const stymie = {
                     `Installed keys: ${keys.sort().join(', ')}`
             );
         }),
-
-    listFile: () => logInfo('Not implemented'),
 
     rm: key =>
         jcrypt(keyFile, null, ['--decrypt'], true)
@@ -207,14 +195,12 @@ const stymie = {
         )
         .catch(logError),
 
-    rmFile: libFile.rm,
-
     // This method is expected to be called immediately with the value of `strip` that was passed
     // on the CLI (see `bin/stymie`). The intent is then to redefine the method with the value of
     // `strip` partially applied.  This will save us from having to always pass through the value
     // of `strip` as a function parameter.
     stripped: strip =>
-        stymie.stripped = field => {
+        key.stripped = field => {
             let f = field;
 
             if (strip) {
@@ -225,5 +211,5 @@ const stymie = {
         }
 };
 
-module.exports = stymie;
+module.exports = key;
 
