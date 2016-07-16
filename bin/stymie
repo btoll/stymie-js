@@ -48,10 +48,11 @@ const argv = require('yargs')
 
 const command = argv._[0];
 
+// TODO
 key.stripped(!!argv.strip);
 
 if (command === 'init') {
-    install.install();
+    install();
 } else {
     const env = process.env;
     const stymieDir = `${env.STYMIE || env.HOME}/.stymie.d`;
@@ -103,7 +104,7 @@ if (command === 'init') {
             if (!answers.install) {
                 util.logInfo('Run `bash scripts/postinstall.bash` to install.');
             } else {
-                install.install();
+                install();
             }
         });
     });

@@ -7,7 +7,7 @@ const util = require('./util');
 const logError = util.logError;
 const logSuccess = util.logSuccess;
 
-module.exports.install = () =>
+module.exports = () =>
     require('inquirer').prompt([{
         type: 'input',
         name: 'installDir',
