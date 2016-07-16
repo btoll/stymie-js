@@ -12,10 +12,10 @@ const env = process.env;
 const keyFile = `${env.STYMIE || env.HOME}/.stymie.d/k`;
 let iter;
 
-function* generateKey(key) {
+function* generateEntry(key) {
     let entry = yield getCredentials(key);
     entry = yield getFields(entry);
-    yield makeKey(entry);
+    yield makeEntry(entry);
 }
 
 function makePassphrase(entry) {
@@ -122,7 +122,7 @@ function getFields(entry) {
     });
 }
 
-function makeKey(entry) {
+function makeEntry(entry) {
     jcrypt(keyFile, null, ['--decrypt'], true)
     .then(data => {
         const list = JSON.parse(data);
@@ -145,17 +145,17 @@ function makeKey(entry) {
             }
         }, true);
     })
-    .then(() => logSuccess('Key created successfully'))
+    .then(() => logSuccess('Entry created successfully'))
     .catch(logError);
 }
 
-module.exports.make = key => {
+module.exports = key => {
     if (!key) {
         logError('No key name');
         return;
     }
 
-    iter = generateKey(key);
+    iter = generateEntry(key);
     iter.next();
 };
 

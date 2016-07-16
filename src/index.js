@@ -3,7 +3,7 @@
 const diceware = require('diceware');
 const inquirer = require('inquirer');
 const jcrypt = require('jcrypt');
-const libKey = require('./key');
+const generateEntry = require('./generateEntry');
 const libFile = require('./file');
 const libUtil = require('./util');
 const log = libUtil.log;
@@ -16,7 +16,7 @@ const keyFile = `${env.STYMIE || env.HOME}/.stymie.d/k`;
 const reWhitespace = /\s/g;
 
 const stymie = {
-    add: libKey.make,
+    add: generateEntry,
 
     addFile: libFile.add,
 
