@@ -17,6 +17,7 @@ securityAnswer: '1st Avenue'
 - Create encrypted files as well as key entries.
 - Since everything is stored in `.stymie_d/`, it's easy to port between systems.
 - GPG end-to-end encryption allows `stymie` to be safely versioned.
+- Generate passwords using [Diceware], [Sillypass] or enter a custom password.
 
 ## Security Features
 
@@ -117,5 +118,7 @@ stymie get example.com --field password | pbcopy
 
 Benjamin Toll
 
+[Diceware]: https://github.com/btoll/diceware
+[Sillypass]: https://github.com/btoll/sillypass
 [shred]: https://en.wikipedia.org/wiki/Shred_(Unix)
 

@@ -1,6 +1,7 @@
 'use strict';
 
 const diceware = require('diceware');
+const sillypass = require('sillypass');
 const inquirer = require('inquirer');
 const jcrypt = require('jcrypt');
 const util = require('./util');
@@ -18,11 +19,11 @@ function* generateEntry(key) {
     yield makeEntry(entry);
 }
 
-function makePassphrase(entry) {
+function makePassphrase(method, entry) {
     if (entry.password !== undefined) {
         iter.next(entry);
     } else {
-        const password = diceware.generate();
+        const password = method.generate();
 
         log(password);
 
@@ -39,7 +40,7 @@ function makePassphrase(entry) {
                 entry.password = password;
                 iter.next(entry);
             } else {
-                makePassphrase(entry);
+                makePassphrase(method, entry);
             }
         });
     }
@@ -66,20 +67,21 @@ function getCredentials(key) {
             }, {
                 type: 'list',
                 name: 'generatePassword',
-                message: 'Generate diceware password?',
+                message: 'Password generation method:',
                 default: false,
                 choices: [
-                    {name: 'Yes', value: true},
-                    {name: 'No', value: false}
+                    {name: 'Diceware (passphrase)', value: diceware},
+                    {name: 'Sillypass (mixed-case, alphanumeric, random characers)', value: sillypass},
+                    {name: 'I\'ll generate it myself', value: 'custom'}
                 ]
             }, {
                 type: 'password',
                 name: 'password',
                 message: 'Enter password:',
                 validate: util.noBlanks,
-                when: answers => !answers.generatePassword
+                when: answers => answers.generatePassword === 'custom'
             }], answers =>
-                makePassphrase({
+                makePassphrase(answers.generatePassword, {
                     key: key,
                     url: answers.url,
                     username: answers.username,
@@ -104,13 +106,13 @@ function getFields(entry) {
         type: 'input',
         name: 'name',
         message: 'Name:',
-        validate: util.noBlank,
+        validate: util.noBlanks,
         when: answers => answers.newField
     }, {
         type: 'input',
         name: 'value',
         message: 'Value:',
-        validate: util.noBlank,
+        validate: util.noBlanks,
         when: answers => answers.newField
     }], answers => {
         if (!answers.newField) {
