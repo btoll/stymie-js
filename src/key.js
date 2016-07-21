@@ -146,7 +146,7 @@ const key = {
             logInfo(
                 !keys.length ?
                     'No installed keys' :
-                    `Installed keys: ${keys.sort().join(', ')}`
+                    `Installed keys: \n${keys.sort().join('\n')}`
             );
         }),
 
