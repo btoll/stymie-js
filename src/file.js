@@ -94,6 +94,10 @@ const file = {
         .catch(logError);
     },
 
+    list: () => {
+        util.logWarn('Not implemented!');
+    },
+
     rm: (() => {
         function rm(file) {
             return new Promise((resolve, reject) =>

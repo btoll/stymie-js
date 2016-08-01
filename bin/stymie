@@ -78,10 +78,10 @@ if (command === 'init') {
                 case 'has': key.has(argv._[1]); break;
                 case 'has-file': file.has(argv._[1]); break;
 
-                case 'list':
                 case 'ls':
-                    key.list();
-                    break;
+                case 'list': key.list(); break;
+
+                case 'ls-file':
                 case 'list-file': file.list(); break;
 
                 case 'rm': key.rm(argv._[1]); break;
