@@ -1,7 +1,5 @@
 #!/usr/bin/env node
 
-'use strict';
-
 const jcrypt = require('jcrypt');
 const key = require('../src/key');
 const file = require('../src/file');

@@ -19,11 +19,11 @@ function* generateEntry(key) {
     yield makeEntry(entry);
 }
 
-function makePassphrase(method, entry) {
+function makePassphrase(generatePassword, entry) {
     if (entry.password !== undefined) {
         iter.next(entry);
     } else {
-        const password = method.generate();
+        const password = generatePassword.generate();
 
         log(password);
 
@@ -40,7 +40,7 @@ function makePassphrase(method, entry) {
                 entry.password = password;
                 iter.next(entry);
             } else {
-                makePassphrase(method, entry);
+                makePassphrase(generatePassword, entry);
             }
         });
     }
@@ -130,9 +130,8 @@ function makeEntry(entry) {
         const list = JSON.parse(data);
         const item = list[entry.key] = {};
 
-        // TODO: Iterator.
-        for (let n in entry) {
-            if (entry.hasOwnProperty(n) && n !== 'key') {
+        for (let n of Object.keys(entry)) {
+            if (n !== 'key') {
                 item[n] = entry[n];
             }
         }

@@ -164,7 +164,6 @@ module.exports = () =>
         })
         .then(data => {
             // Note that `data` is undefined if not updating $HISTIGNORE.
-            // TODO: is having a conditional in a #then a code smell?
             if (data) {
                 logSuccess(data);
 

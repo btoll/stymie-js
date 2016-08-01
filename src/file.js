@@ -1,5 +1,3 @@
-// TODO: are nested .catch()s needed?
-
 'use strict';
 
 const inquirer = require('inquirer');
