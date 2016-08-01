@@ -57,8 +57,10 @@ if (command === 'init') {
     const env = process.env;
     const stymieDir = `${env.STYMIE || env.HOME}/.stymie.d`;
 
-    util.fileExists(`${stymieDir}/c`).then(f =>
-        jcrypt(f, null, ['--decrypt'], true).then(data => {
+    util.fileExists(`${stymieDir}/c`)
+    .then(f =>
+        jcrypt(f, null, ['--decrypt'], true)
+        .then(data => {
             util.setGPGOptions(data);
 
             switch (command) {
@@ -88,7 +90,9 @@ if (command === 'init') {
                 default: util.logError('Bad command');
             }
         })
-    ).catch(err => {
+        .catch(util.logError)
+    )
+    .catch(err => {
         // TODO: Canceling GPG when asking for passphrase will get here, THIS IS NOT GOOD!
         util.logWarn('It appears that stymie is not installed.\n');
 
