@@ -1,5 +1,6 @@
 'use strict';
 
+const fs = require('fs');
 const inquirer = require('inquirer');
 const cp = require('child_process');
 const which = require('which');
@@ -10,7 +11,8 @@ const logInfo = util.logInfo;
 const logSuccess = util.logSuccess;
 const env = process.env;
 const cwd = process.cwd();
-const keyDir = `${env.STYMIE || env.HOME}/.stymie.d/s`;
+const fileDir = `${env.STYMIE || env.HOME}/.stymie.d/s`;
+const treeFile = `${env.STYMIE || env.HOME}/.stymie.d/t`;
 
 function openEditor(file, callback) {
     const editor = env.EDITOR || 'vim';
@@ -36,10 +38,10 @@ const file = {
         // This seems counter-intuitive because the resolve and reject operations
         // are reversed, but this is b/c the success case is when the file does not
         // exist (and thus will throw an exception).
-        util.fileExists(`${keyDir}/${hashedFilename}`)
+        util.fileExists(`${fileDir}/${hashedFilename}`)
         .then(() => logError('File already exists'))
         .catch(() =>
-            jcrypt.stream(key, `${keyDir}/${hashedFilename}`, {
+            jcrypt.stream(key, `${fileDir}/${hashedFilename}`, {
                 gpg: util.getGPGArgs(),
                 file: {
                     flags: 'w',
@@ -48,6 +50,30 @@ const file = {
                     mode: 0o0600
                 }
             }, true)
+            // Now that the new file has been added we need to record it in the "treefile"
+            // in order to do lookups.
+            // For example:
+            //
+            //      hashedFilename => plaintext
+            //
+            .then(() => {
+                jcrypt(treeFile, null, ['--decrypt'], true)
+                .then(data => {
+                    const list = JSON.parse(data);
+
+                    list[hashedFilename] = key;
+
+                    jcrypt.stream(JSON.stringify(list, null, 4), treeFile, {
+                        gpg: util.getGPGArgs(),
+                        file: {
+                            flags: 'w',
+                            defaultEncoding: 'utf8',
+                            fd: null,
+                            mode: 0o0600
+                        }
+                    }, true);
+                });
+            })
             .then(() => logSuccess('File created successfully'))
             .catch(logError)
         );
@@ -55,7 +81,7 @@ const file = {
 
     edit: key => {
         const hashedFilename = util.hashFilename(key);
-        const path = `${keyDir}/${hashedFilename}`;
+        const path = `${fileDir}/${hashedFilename}`;
 
         util.fileExists(path).then(() =>
             jcrypt(path, null, ['--decrypt'])
@@ -75,7 +101,7 @@ const file = {
     get: key => {
         const hashedFilename = util.hashFilename(key);
 
-        util.fileExists(`${keyDir}/${hashedFilename}`)
+        util.fileExists(`${fileDir}/${hashedFilename}`)
         .then(file =>
             // Pipe to stdout.
             jcrypt.stream(file, null, ['--decrypt'])
@@ -87,13 +113,26 @@ const file = {
     has: key => {
         const hashedFilename = util.hashFilename(key);
 
-        util.fileExists(`${keyDir}/${hashedFilename}`)
+        util.fileExists(`${fileDir}/${hashedFilename}`)
         .then(() => logInfo('File exists'))
         .catch(logError);
     },
 
     list: () => {
-        util.logWarn('Not implemented!');
+        let list;
+
+        jcrypt(treeFile, null, ['--decrypt'], true)
+        .then(data => {
+            list = JSON.parse(data);
+
+            fs.readdir(fileDir, (err, files) => {
+                if (!files.length) {
+                    util.logInfo('No files');
+                } else {
+                    files.forEach(file => logInfo(list[file]));
+                }
+            });
+        });
     },
 
     rm: (() => {
@@ -122,7 +161,7 @@ const file = {
 
         return key => {
             const hashedFilename = util.hashFilename(key);
-            const path = `${keyDir}/${hashedFilename}`;
+            const path = `${fileDir}/${hashedFilename}`;
 
             util.fileExists(path)
             .then(() =>

@@ -4,12 +4,12 @@ const diceware = require('diceware');
 const inquirer = require('inquirer');
 const jcrypt = require('jcrypt');
 const generateEntry = require('./generateEntry');
-const libUtil = require('./util');
-const log = libUtil.log;
-const logError = libUtil.logError;
-const logInfo = libUtil.logInfo;
-const logRaw = libUtil.logRaw;
-const logSuccess = libUtil.logSuccess;
+const util = require('./util');
+const log = util.log;
+const logError = util.logError;
+const logInfo = util.logInfo;
+const logRaw = util.logRaw;
+const logSuccess = util.logSuccess;
 const env = process.env;
 const keyFile = `${env.STYMIE || env.HOME}/.stymie.d/k`;
 const reWhitespace = /\s/g;
@@ -34,7 +34,7 @@ const key = {
                     name: 'key',
                     message: 'Edit key:',
                     default: key,
-                    validate: libUtil.noDuplicates.bind(null, key, list)
+                    validate: util.noDuplicates.bind(null, key, list)
                 }];
 
                 for (const n in entry) {
@@ -44,7 +44,7 @@ const key = {
                             name: n,
                             message: `Edit ${n}:`,
                             default: entry[n],
-                            validate: libUtil.hasChanged.bind(null, hasChanged, n)
+                            validate: util.hasChanged.bind(null, hasChanged, n)
                         });
                     }
                 }
@@ -71,7 +71,7 @@ const key = {
                         }
 
                         jcrypt.stream(JSON.stringify(list, null, 4), keyFile, {
-                            gpg: libUtil.getGPGArgs(),
+                            gpg: util.getGPGArgs(),
                             file: {
                                 flags: 'w',
                                 defaultEncoding: 'utf8',
@@ -182,7 +182,7 @@ const key = {
         })
         .then(list =>
             jcrypt.stream(JSON.stringify(list, null, 4), keyFile, {
-                gpg: libUtil.getGPGArgs(),
+                gpg: util.getGPGArgs(),
                 file: {
                     flags: 'w',
                     defaultEncoding: 'utf8',

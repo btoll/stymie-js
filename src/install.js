@@ -135,6 +135,7 @@ module.exports = () =>
             logSuccess(`Created encrypted config file ${file}`);
 
             // Create entry list file.
+            // TODO: DRY!
             return jcrypt.stream(JSON.stringify({}, null, 4), `${stymieDir}/k`, {
                 gpg: arr,
                 file: {
@@ -147,6 +148,21 @@ module.exports = () =>
         })
         .then(file => {
             logSuccess(`Created encrypted entries list file ${file}`);
+
+            // Create tree file (captures the names of the files in s/).
+            // TODO: DRY!
+            return jcrypt.stream(JSON.stringify({}, null, 4), `${stymieDir}/t`, {
+                gpg: arr,
+                file: {
+                    flags: 'w',
+                    defaultEncoding: 'utf8',
+                    fd: null,
+                    mode: 0o0600
+                }
+            }, true);
+        })
+        .then(file => {
+            logSuccess(`Created encrypted tree file ${file}`);
 
             if (answers.histignore) {
                 const histignoreFile = `${home}/${answers.histignoreFile}`;
@@ -176,6 +192,7 @@ module.exports = () =>
             logError(err);
             util.logWarn('Cleaning up, install aborted...');
 
+            // TODO: Shred?
             const rm = cp.spawn('rm', ['-r', '-f', stymieDir]);
 
             rm.on('close', code => {
