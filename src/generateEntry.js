@@ -1,10 +1,11 @@
 'use strict';
 
 const diceware = require('diceware');
-const sillypass = require('sillypass');
 const inquirer = require('inquirer');
 const jcrypt = require('jcrypt');
+const sillypass = require('sillypass');
 const util = require('./util');
+
 const log = util.log;
 const logError = util.logError;
 const logInfo = util.logInfo;
@@ -14,8 +15,8 @@ const keyFile = `${env.STYMIE || env.HOME}/.stymie.d/k`;
 let iter;
 
 function* generateEntry(key) {
-    let entry = yield getCredentials(key);
-    entry = yield getFields(entry);
+    let entry = yield getNewKeyInfo(key);
+    entry = yield getNewFields(entry);
     yield makeEntry(entry);
 }
 
@@ -46,8 +47,8 @@ function makePassphrase(generatePassword, entry) {
     }
 }
 
-function getCredentials(key) {
-    jcrypt(keyFile, null, ['--decrypt'], true)
+function getNewKeyInfo(key) {
+    jcrypt.readFile(keyFile, ['--decrypt'])
     .then(data => {
         const list = JSON.parse(data);
 
@@ -93,7 +94,7 @@ function getCredentials(key) {
     .catch(logError);
 }
 
-function getFields(entry) {
+function getNewFields(entry) {
     inquirer.prompt([{
         type: 'list',
         name: 'newField',
@@ -119,13 +120,13 @@ function getFields(entry) {
             iter.next(entry);
         } else {
             entry[answers.name] = answers.value;
-            getFields(entry);
+            getNewFields(entry);
         }
     });
 }
 
 function makeEntry(entry) {
-    jcrypt(keyFile, null, ['--decrypt'], true)
+    jcrypt.readFile(keyFile, ['--decrypt'])
     .then(data => {
         const list = JSON.parse(data);
         const item = list[entry.key] = {};
@@ -136,15 +137,12 @@ function makeEntry(entry) {
             }
         }
 
-        return jcrypt.stream(JSON.stringify(list, null, 4), keyFile, {
-            gpg: util.getGPGArgs(),
-            file: {
-                flags: 'w',
-                defaultEncoding: 'utf8',
-                fd: null,
-                mode: 0o0600
-            }
-        }, true);
+        return jcrypt.streamDataToFile(
+            JSON.stringify(list, null, 4),
+            keyFile,
+            util.getDefaultFileOptions(),
+            util.getGPGArgs()
+        );
     })
     .then(() => logSuccess('Entry created successfully'))
     .catch(logError);

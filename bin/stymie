@@ -79,8 +79,8 @@ if (command === 'init') {
     const stymieDir = `${env.STYMIE || env.HOME}/.stymie.d`;
 
     util.fileExists(`${stymieDir}/c`)
-    .then(f =>
-        jcrypt(f, null, ['--decrypt'], true)
+    .then(configFile =>
+        jcrypt.readFile(configFile, ['--decrypt'])
         .then(data => {
             util.setGPGOptions(data);
 

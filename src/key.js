@@ -1,9 +1,10 @@
 'use strict';
 
 const diceware = require('diceware');
+const generateEntry = require('./generateEntry');
 const inquirer = require('inquirer');
 const jcrypt = require('jcrypt');
-const generateEntry = require('./generateEntry');
+
 const util = require('./util');
 const log = util.log;
 const logError = util.logError;
@@ -72,12 +73,7 @@ const key = {
 
                         jcrypt.stream(JSON.stringify(list, null, 4), keyFile, {
                             gpg: util.getGPGArgs(),
-                            file: {
-                                flags: 'w',
-                                defaultEncoding: 'utf8',
-                                fd: null,
-                                mode: 0o0600
-                            }
+                            file: util.getDefaultFileOptions()
                         }, true)
                         .then(() => logSuccess('Key has been updated'))
                         .catch(logError);
@@ -183,12 +179,7 @@ const key = {
         .then(list =>
             jcrypt.stream(JSON.stringify(list, null, 4), keyFile, {
                 gpg: util.getGPGArgs(),
-                file: {
-                    flags: 'w',
-                    defaultEncoding: 'utf8',
-                    fd: null,
-                    mode: 0o0600
-                }
+                file: util.getDefaultFileOptions()
             }, true)
             .then(() => logSuccess('Key has been removed'))
             .catch(logError)

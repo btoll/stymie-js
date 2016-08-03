@@ -1,27 +1,30 @@
 'use strict';
 
+const cp = require('child_process');
 const fs = require('fs');
 const inquirer = require('inquirer');
-const cp = require('child_process');
-const which = require('which');
 const jcrypt = require('jcrypt');
 const util = require('./util');
+const which = require('which');
+
+const defaultFileOptions = util.getDefaultFileOptions();
+const gpgArgs = util.getGPGArgs();
 const logError = util.logError;
 const logInfo = util.logInfo;
 const logSuccess = util.logSuccess;
 const env = process.env;
 const cwd = process.cwd();
 const fileDir = `${env.STYMIE || env.HOME}/.stymie.d/s`;
-const treeFile = `${env.STYMIE || env.HOME}/.stymie.d/t`;
+const treeFile = `${env.STYMIE || env.HOME}/.stymie.d/f`;
 
 function openEditor(file, callback) {
     const editor = env.EDITOR || 'vim';
-    const args = require(`${cwd}/editors/${editor}`);
+    const editorArgs = require(`${cwd}/editors/${editor}`);
 
     // The editor modules will only contain the CLI args so we need to push on the filename.
-    args.push(file);
+    editorArgs.push(file);
 
-    cp.spawn(editor, args, {
+    cp.spawn(editor, editorArgs, {
         stdio: 'inherit'
     }).on('exit', callback);
 }
@@ -41,39 +44,33 @@ const file = {
         util.fileExists(`${fileDir}/${hashedFilename}`)
         .then(() => logError('File already exists'))
         .catch(() =>
-            jcrypt.stream(key, `${fileDir}/${hashedFilename}`, {
-                gpg: util.getGPGArgs(),
-                file: {
-                    flags: 'w',
-                    defaultEncoding: 'utf8',
-                    fd: null,
-                    mode: 0o0600
-                }
-            }, true)
+            jcrypt.streamDataToFile(
+                key,
+                `${fileDir}/${hashedFilename}`,
+                defaultFileOptions,
+                gpgArgs
+            )
             // Now that the new file has been added we need to record it in the "treefile"
             // in order to do lookups.
             // For example:
             //
             //      hashedFilename => plaintext
             //
-            .then(() => {
-                jcrypt(treeFile, null, ['--decrypt'], true)
+            .then(() =>
+                jcrypt.readFile(treeFile, ['--decrypt'])
                 .then(data => {
                     const list = JSON.parse(data);
 
                     list[hashedFilename] = key;
 
-                    jcrypt.stream(JSON.stringify(list, null, 4), treeFile, {
-                        gpg: util.getGPGArgs(),
-                        file: {
-                            flags: 'w',
-                            defaultEncoding: 'utf8',
-                            fd: null,
-                            mode: 0o0600
-                        }
-                    }, true);
-                });
-            })
+                    jcrypt.streamDataToFile(
+                        JSON.stringify(list, null, 4),
+                        treeFile,
+                        defaultFileOptions,
+                        gpgArgs
+                    );
+                })
+            )
             .then(() => logSuccess('File created successfully'))
             .catch(logError)
         );
@@ -84,15 +81,15 @@ const file = {
         const path = `${fileDir}/${hashedFilename}`;
 
         util.fileExists(path).then(() =>
-            jcrypt(path, null, ['--decrypt'])
-            .then(() =>
+            jcrypt(path, null, defaultFileOptions, ['--decrypt'])
+            .then(() => {
                 openEditor(path, () =>
                     // Re-encrypt once done.
-                    jcrypt(path, null, util.getGPGArgs())
+                    jcrypt(path, null, defaultFileOptions, gpgArgs)
                     .then(() => logInfo('Re-encrypting and closing the file'))
                     .catch(logError)
-                )
-            )
+                );
+            })
             .catch(logError)
         )
         .catch(logError);
@@ -119,11 +116,9 @@ const file = {
     },
 
     list: () => {
-        let list;
-
-        jcrypt(treeFile, null, ['--decrypt'], true)
+        jcrypt.readFile(treeFile, ['--decrypt'])
         .then(data => {
-            list = JSON.parse(data);
+            let list = JSON.parse(data);
 
             fs.readdir(fileDir, (err, files) => {
                 if (!files.length) {
@@ -132,7 +127,8 @@ const file = {
                     files.forEach(file => logInfo(list[file]));
                 }
             });
-        });
+        })
+        .catch(logError);
     },
 
     rm: (() => {

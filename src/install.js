@@ -1,9 +1,11 @@
 'use strict';
 
-const fs = require('fs');
 const cp = require('child_process');
+const fs = require('fs');
 const jcrypt = require('jcrypt');
 const util = require('./util');
+
+const defaultFileOptions = util.getDefaultFileOptions();
 const logError = util.logError;
 const logSuccess = util.logSuccess;
 
@@ -76,16 +78,16 @@ module.exports = () =>
         const armor = answers.armor;
         const recipient = answers.recipient;
         const sign = answers.sign;
-        const arr = ['--encrypt', '-r', recipient];
+        const gpgOptions = ['--encrypt', '-r', recipient];
         let installDir = answers.installDir;
         let stymieDir;
 
         if (armor) {
-            arr.push('--armor');
+            gpgOptions.push('--armor');
         }
 
         if (sign) {
-            arr.push('--sign');
+            gpgOptions.push('--sign');
         }
 
         if (installDir === '~') {
@@ -116,50 +118,36 @@ module.exports = () =>
             logSuccess(`Created encrypted entries directory ${dir}`);
 
             // Create config file.
-            return jcrypt.stream(JSON.stringify({
+            return jcrypt.streamDataToFile(JSON.stringify({
                 armor: armor,
                 hash: answers.hash,
                 recipient: recipient,
                 sign: sign
-            }, null, 4), `${stymieDir}/c`, {
-                gpg: arr,
-                file: {
-                    flags: 'w',
-                    defaultEncoding: 'utf8',
-                    fd: null,
-                    mode: 0o0600
-                }
-            }, true);
+            }, null, 4), `${stymieDir}/c`, util.getDefaultFileOptions(), gpgOptions);
         })
         .then(file => {
             logSuccess(`Created encrypted config file ${file}`);
 
             // Create entry list file.
             // TODO: DRY!
-            return jcrypt.stream(JSON.stringify({}, null, 4), `${stymieDir}/k`, {
-                gpg: arr,
-                file: {
-                    flags: 'w',
-                    defaultEncoding: 'utf8',
-                    fd: null,
-                    mode: 0o0600
-                }
-            }, true);
+            return jcrypt.streamDataToFile(
+                JSON.stringify({}, null, 4),
+                `${stymieDir}/k`,
+                defaultFileOptions,
+                gpgOptions
+            );
         })
         .then(file => {
             logSuccess(`Created encrypted entries list file ${file}`);
 
             // Create tree file (captures the names of the files in s/).
             // TODO: DRY!
-            return jcrypt.stream(JSON.stringify({}, null, 4), `${stymieDir}/t`, {
-                gpg: arr,
-                file: {
-                    flags: 'w',
-                    defaultEncoding: 'utf8',
-                    fd: null,
-                    mode: 0o0600
-                }
-            }, true);
+            return jcrypt.streamDataToFile(
+                JSON.stringify({}, null, 4),
+                `${stymieDir}/f`,
+                defaultFileOptions,
+                gpgOptions
+            );
         })
         .then(file => {
             logSuccess(`Created encrypted tree file ${file}`);

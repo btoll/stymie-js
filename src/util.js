@@ -5,7 +5,7 @@ const crypto = require('crypto');
 const fs = require('fs');
 const logError = logger.error;
 const logWarn = logger.warn;
-let gpgOptions;
+let gpgOptions = {};
 
 module.exports = {
     log: logger.log,
@@ -16,15 +16,15 @@ module.exports = {
     logWarn: logWarn,
 
     fileExists: path =>
-        new Promise((resolve, reject) => {
-            fs.stat(path, (err) => {
+        new Promise((resolve, reject) =>
+            fs.stat(path, err => {
                 if (err) {
                     reject('No matching entry');
                 } else {
                     resolve(path);
                 }
-            });
-        }),
+            })
+        ),
 
     getGPGArgs: () => {
         let arr = ['--encrypt', '-r', gpgOptions.recipient];
@@ -40,7 +40,14 @@ module.exports = {
         return arr;
     },
 
-    setGPGOptions: data => gpgOptions = JSON.parse(data),
+    getDefaultFileOptions: () => {
+        return {
+            flags: 'w',
+            defaultEncoding: 'utf8',
+            fd: null,
+            mode: 0o0600
+        };
+    },
 
     hasChanged: (hasChanged, originalValue, input) => {
         if (originalValue !== input) {
@@ -78,6 +85,8 @@ module.exports = {
         }
 
         return res;
-    }
+    },
+
+    setGPGOptions: data => gpgOptions = JSON.parse(data)
 };
 
