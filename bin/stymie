@@ -1,11 +1,11 @@
 #!/usr/bin/env node
 
+const file = require('../src/file');
+const inquirer = require('inquirer');
+const install = require('../src/install');
 const jcrypt = require('jcrypt');
 const key = require('../src/key');
-const file = require('../src/file');
 const util = require('../src/util');
-const install = require('../src/install');
-const inquirer = require('inquirer');
 
 const argv = require('yargs')
     .usage('Usage: stymie <command> [options]')
@@ -80,7 +80,7 @@ if (command === 'init') {
 
     util.fileExists(`${stymieDir}/c`)
     .then(configFile =>
-        jcrypt.readFile(configFile, ['--decrypt'])
+        jcrypt.decryptFile(configFile)
         .then(data => {
             util.setGPGOptions(data);
 

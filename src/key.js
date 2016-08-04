@@ -4,8 +4,8 @@ const diceware = require('diceware');
 const generateEntry = require('./generateEntry');
 const inquirer = require('inquirer');
 const jcrypt = require('jcrypt');
-
 const util = require('./util');
+
 const log = util.log;
 const logError = util.logError;
 const logInfo = util.logInfo;
@@ -19,7 +19,7 @@ const key = {
     add: generateEntry,
 
     edit: key =>
-        jcrypt(keyFile, null, ['--decrypt'], true)
+        jcrypt.decryptFile(keyFile)
         .then(data => {
             const list = JSON.parse(data);
             const entry = list[key];
@@ -71,10 +71,12 @@ const key = {
                             }
                         }
 
-                        jcrypt.stream(JSON.stringify(list, null, 4), keyFile, {
-                            gpg: util.getGPGArgs(),
-                            file: util.getDefaultFileOptions()
-                        }, true)
+                        jcrypt.encryptDataToFile(
+                            JSON.stringify(list, null, 4),
+                            keyFile,
+                            util.getDefaultFileOptions(),
+                            util.getGPGArgs()
+                        )
                         .then(() => logSuccess('Key has been updated'))
                         .catch(logError);
                     } else {
@@ -90,7 +92,7 @@ const key = {
     generate: () => log(diceware.generate()),
 
     get: (needle, field) =>
-        jcrypt(keyFile, null, ['--decrypt'], true)
+        jcrypt.decryptFile(keyFile)
         .then(data => {
             const list = JSON.parse(data);
             const entry = list[needle];
@@ -124,7 +126,7 @@ const key = {
         .catch(logError),
 
     has: key =>
-        jcrypt(keyFile, null, ['--decrypt'], true)
+        jcrypt.decryptFile(keyFile)
         .then(data =>
             logInfo(
                 JSON.parse(data)[key] ?
@@ -135,7 +137,7 @@ const key = {
         .catch(logError),
 
     list: () =>
-        jcrypt(keyFile, null, ['--decrypt'], true)
+        jcrypt.decryptFile(keyFile)
         .then(data => {
             const keys = Object.keys(JSON.parse(data));
 
@@ -147,7 +149,7 @@ const key = {
         }),
 
     rm: key =>
-        jcrypt(keyFile, null, ['--decrypt'], true)
+        jcrypt.decryptFile(keyFile)
         .then(data => {
             const list = JSON.parse(data);
 
@@ -177,10 +179,12 @@ const key = {
             });
         })
         .then(list =>
-            jcrypt.stream(JSON.stringify(list, null, 4), keyFile, {
-                gpg: util.getGPGArgs(),
-                file: util.getDefaultFileOptions()
-            }, true)
+            jcrypt.encryptDataToFile(
+                JSON.stringify(list, null, 4),
+                keyFile,
+                util.getDefaultFileOptions(),
+                util.getGPGArgs()
+            )
             .then(() => logSuccess('Key has been removed'))
             .catch(logError)
         )

@@ -7,8 +7,6 @@ const jcrypt = require('jcrypt');
 const util = require('./util');
 const which = require('which');
 
-const defaultFileOptions = util.getDefaultFileOptions();
-const gpgArgs = util.getGPGArgs();
 const logError = util.logError;
 const logInfo = util.logInfo;
 const logSuccess = util.logSuccess;
@@ -36,6 +34,8 @@ const file = {
             return;
         }
 
+        const defaultFileOptions = util.getDefaultFileOptions();
+        const gpgArgs = util.getGPGArgs();
         const hashedFilename = util.hashFilename(key);
 
         // This seems counter-intuitive because the resolve and reject operations
@@ -44,7 +44,7 @@ const file = {
         util.fileExists(`${fileDir}/${hashedFilename}`)
         .then(() => logError('File already exists'))
         .catch(() =>
-            jcrypt.streamDataToFile(
+            jcrypt.encryptDataToFile(
                 key,
                 `${fileDir}/${hashedFilename}`,
                 defaultFileOptions,
@@ -57,13 +57,13 @@ const file = {
             //      hashedFilename => plaintext
             //
             .then(() =>
-                jcrypt.readFile(treeFile, ['--decrypt'])
+                jcrypt.decryptFile(treeFile)
                 .then(data => {
                     const list = JSON.parse(data);
 
                     list[hashedFilename] = key;
 
-                    jcrypt.streamDataToFile(
+                    jcrypt.encryptDataToFile(
                         JSON.stringify(list, null, 4),
                         treeFile,
                         defaultFileOptions,
@@ -77,15 +77,16 @@ const file = {
     },
 
     edit: key => {
+        const defaultFileOptions = util.getDefaultFileOptions();
         const hashedFilename = util.hashFilename(key);
         const path = `${fileDir}/${hashedFilename}`;
 
         util.fileExists(path).then(() =>
-            jcrypt(path, null, defaultFileOptions, ['--decrypt'])
+            jcrypt.decryptFile(path)
             .then(() => {
                 openEditor(path, () =>
                     // Re-encrypt once done.
-                    jcrypt(path, null, defaultFileOptions, gpgArgs)
+                    jcrypt.encryptFile(path, defaultFileOptions, util.getGPGArgs())
                     .then(() => logInfo('Re-encrypting and closing the file'))
                     .catch(logError)
                 );
@@ -116,7 +117,7 @@ const file = {
     },
 
     list: () => {
-        jcrypt.readFile(treeFile, ['--decrypt'])
+        jcrypt.decryptFile(treeFile)
         .then(data => {
             let list = JSON.parse(data);
 
