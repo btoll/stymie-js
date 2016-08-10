@@ -44,12 +44,8 @@ const file = {
         util.fileExists(`${fileDir}/${hashedFilename}`)
         .then(() => logError('File already exists'))
         .catch(() =>
-            jcrypt.encryptDataToFile(
-                key,
-                `${fileDir}/${hashedFilename}`,
-                defaultFileOptions,
-                gpgArgs
-            )
+            jcrypt.encrypt(key, gpgArgs)
+            .then(enciphered => util.writeFile(`${fileDir}/${hashedFilename}`, enciphered, defaultFileOptions))
             // Now that the new file has been added we need to record it in the "treefile"
             // in order to do lookups.
             // For example:
@@ -63,12 +59,8 @@ const file = {
 
                     list[hashedFilename] = key;
 
-                    jcrypt.encryptDataToFile(
-                        JSON.stringify(list, null, 4),
-                        treeFile,
-                        defaultFileOptions,
-                        gpgArgs
-                    );
+                    jcrypt.encrypt(JSON.stringify(list, null, 4), gpgArgs)
+                    .then(enciphered => util.writeFile(treeFile, enciphered, defaultFileOptions));
                 })
             )
             .then(() => logSuccess('File created successfully'))
@@ -82,11 +74,11 @@ const file = {
         const path = `${fileDir}/${hashedFilename}`;
 
         util.fileExists(path).then(() =>
-            jcrypt.decryptFile(path)
+            jcrypt.decryptToFile(path)
             .then(() => {
                 openEditor(path, () =>
                     // Re-encrypt once done.
-                    jcrypt.encryptFile(path, defaultFileOptions, util.getGPGArgs())
+                    jcrypt.encryptToFile(path, null, util.getGPGArgs(), defaultFileOptions)
                     .then(() => logInfo('Re-encrypting and closing the file'))
                     .catch(logError)
                 );

@@ -71,12 +71,8 @@ const key = {
                             }
                         }
 
-                        jcrypt.encryptDataToFile(
-                            JSON.stringify(list, null, 4),
-                            keyFile,
-                            util.getDefaultFileOptions(),
-                            util.getGPGArgs()
-                        )
+                        jcrypt.encrypt(JSON.stringify(list, null, 4), util.getGPGArgs())
+                        .then(enciphered => util.writeFile(keyFile, enciphered, util.getDefaultFileOptions()))
                         .then(() => logSuccess('Key has been updated'))
                         .catch(logError);
                     } else {
@@ -179,12 +175,8 @@ const key = {
             });
         })
         .then(list =>
-            jcrypt.encryptDataToFile(
-                JSON.stringify(list, null, 4),
-                keyFile,
-                util.getDefaultFileOptions(),
-                util.getGPGArgs()
-            )
+            jcrypt.encrypt(JSON.stringify(list, null, 4), util.getGPGArgs())
+            .then(enciphered => util.writeFile(keyFile, enciphered, util.getDefaultFileOptions()))
             .then(() => logSuccess('Key has been removed'))
             .catch(logError)
         )

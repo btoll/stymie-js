@@ -1,10 +1,19 @@
 'use strict';
 
-const logger = require('logger');
 const crypto = require('crypto');
 const fs = require('fs');
+const logger = require('logger');
+
 const logError = logger.error;
 const logWarn = logger.warn;
+const defaultWriteOptions = {
+    defaultEncoding: 'utf8',
+    encoding: 'utf8',
+    fd: null,
+    flags: 'w',
+    mode: 0o0600
+};
+
 let gpgOptions = {};
 
 module.exports = {
@@ -27,7 +36,7 @@ module.exports = {
         ),
 
     getGPGArgs: () => {
-        let arr = ['--encrypt', '-r', gpgOptions.recipient];
+        let arr = ['-r', gpgOptions.recipient];
 
         if (gpgOptions.armor) {
             arr.push('--armor');
@@ -87,6 +96,18 @@ module.exports = {
         return res;
     },
 
-    setGPGOptions: data => gpgOptions = JSON.parse(data)
+    setGPGOptions: data => gpgOptions = JSON.parse(data),
+
+    // TODO: (dest, data, writeOptions = defaultWriteOptions)
+    writeFile: (dest, data, writeOptions) =>
+        new Promise((resolve, reject) =>
+            fs.writeFile(dest, data, writeOptions || defaultWriteOptions, err => {
+                if (err) {
+                    reject(err);
+                } else {
+                    resolve(dest);
+                }
+            })
+        )
 };
 
