@@ -99,9 +99,10 @@ module.exports = {
     setGPGOptions: data => gpgOptions = JSON.parse(data),
 
     // TODO: (dest, data, writeOptions = defaultWriteOptions)
-    writeFile: (dest, data, writeOptions) =>
+    // `enciphered` last file partial application!
+    writeFile: (dest, writeOptions, enciphered) =>
         new Promise((resolve, reject) =>
-            fs.writeFile(dest, data, writeOptions || defaultWriteOptions, err => {
+            fs.writeFile(dest, enciphered, writeOptions || defaultWriteOptions, err => {
                 if (err) {
                     reject(err);
                 } else {

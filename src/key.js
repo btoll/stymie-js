@@ -72,7 +72,7 @@ const key = {
                         }
 
                         jcrypt.encrypt(JSON.stringify(list, null, 4), util.getGPGArgs())
-                        .then(enciphered => util.writeFile(keyFile, enciphered, util.getDefaultFileOptions()))
+                        .then(util.writeFile.bind(null, keyFile, util.getDefaultFileOptions()))
                         .then(() => logSuccess('Key has been updated'))
                         .catch(logError);
                     } else {
@@ -176,7 +176,7 @@ const key = {
         })
         .then(list =>
             jcrypt.encrypt(JSON.stringify(list, null, 4), util.getGPGArgs())
-            .then(enciphered => util.writeFile(keyFile, enciphered, util.getDefaultFileOptions()))
+            .then(util.writeFile.bind(null, keyFile, util.getDefaultFileOptions()))
             .then(() => logSuccess('Key has been removed'))
             .catch(logError)
         )
