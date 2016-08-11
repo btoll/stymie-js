@@ -45,7 +45,7 @@ const file = {
         .then(() => logError('File already exists'))
         .catch(() =>
             jcrypt.encrypt(key, gpgArgs)
-            .then(enciphered => util.writeFile(`${fileDir}/${hashedFilename}`, enciphered, defaultFileOptions))
+            .then(util.writeFile.bind(null, `${fileDir}/${hashedFilename}`, defaultFileOptions))
             // Now that the new file has been added we need to record it in the "treefile"
             // in order to do lookups.
             // For example:
@@ -60,8 +60,9 @@ const file = {
                     list[hashedFilename] = key;
 
                     jcrypt.encrypt(JSON.stringify(list, null, 4), gpgArgs)
-                    .then(enciphered => util.writeFile(treeFile, enciphered, defaultFileOptions));
+                    .then(util.writeFile.bind(null, treeFile, defaultFileOptions));
                 })
+                .catch(logError)
             )
             .then(() => logSuccess('File created successfully'))
             .catch(logError)
@@ -108,7 +109,7 @@ const file = {
         .catch(logError);
     },
 
-    list: () => {
+    list: () =>
         jcrypt.decryptFile(treeFile)
         .then(data => {
             let list = JSON.parse(data);
@@ -121,8 +122,7 @@ const file = {
                 }
             });
         })
-        .catch(logError);
-    },
+        .catch(logError),
 
     rm: (() => {
         function rm(file) {

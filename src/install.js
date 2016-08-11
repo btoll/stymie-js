@@ -118,36 +118,32 @@ module.exports = () =>
             logSuccess(`Created encrypted entries directory ${dir}`);
 
             // Create config file.
-            return jcrypt.streamDataToFile(JSON.stringify({
+            return jcrypt.encrypt(JSON.stringify({
                 armor: armor,
                 hash: answers.hash,
                 recipient: recipient,
                 sign: sign
-            }, null, 4), `${stymieDir}/c`, util.getDefaultFileOptions(), gpgOptions);
+            }, null, 4), gpgOptions)
+            .then(util.writeFile.bind(null, `${stymieDir}/c`, util.getDefaultFileOptions()))
+            .catch(logError);
         })
         .then(file => {
             logSuccess(`Created encrypted config file ${file}`);
 
             // Create entry list file.
             // TODO: DRY!
-            return jcrypt.streamDataToFile(
-                JSON.stringify({}, null, 4),
-                `${stymieDir}/k`,
-                defaultFileOptions,
-                gpgOptions
-            );
+            return jcrypt.encrypt(JSON.stringify({}, null, 4), gpgOptions)
+            .then(util.writeFile.bind(null, `${stymieDir}/k`, defaultFileOptions))
+            .catch(logError);
         })
         .then(file => {
             logSuccess(`Created encrypted entries list file ${file}`);
 
             // Create tree file (captures the names of the files in s/).
             // TODO: DRY!
-            return jcrypt.streamDataToFile(
-                JSON.stringify({}, null, 4),
-                `${stymieDir}/f`,
-                defaultFileOptions,
-                gpgOptions
-            );
+            return jcrypt.encrypt(JSON.stringify({}, null, 4), gpgOptions)
+            .then(util.writeFile.bind(null, `${stymieDir}/f`, defaultFileOptions))
+            .catch(logError);
         })
         .then(file => {
             logSuccess(`Created encrypted tree file ${file}`);

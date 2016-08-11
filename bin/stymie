@@ -68,16 +68,18 @@ const argv = require('yargs')
     .argv;
 
 const command = argv._[0];
+const env = process.env;
+const stymieDir = `${env.STYMIE || env.HOME}/.stymie.d`;
 
 // TODO
 key.stripped(!!argv.strip);
 
 if (command === 'init') {
-    install();
+    // TODO: Allow multiple installations in multiple locations?
+    util.fileExists(`${stymieDir}/c`)
+    .then(() => util.logWarn('Stymie already exists!'))
+    .catch(install);
 } else {
-    const env = process.env;
-    const stymieDir = `${env.STYMIE || env.HOME}/.stymie.d`;
-
     util.fileExists(`${stymieDir}/c`)
     .then(configFile =>
         jcrypt.decryptFile(configFile)
