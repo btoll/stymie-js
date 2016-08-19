@@ -44,20 +44,29 @@ const file = {
                 if (err) {
                     logError('Could not create directory');
                 } else {
-                    jcrypt.decryptFile(treeFile)
-                    .then(data => {
-                        let list = JSON.parse(data);
-                        util.writeDirsToFile(list, key);
-
-                        jcrypt.encrypt(JSON.stringify(list, null, 4), gpgArgs)
+                    const bar = util.writeDirsToFile.bind(null, key);
+                    const encryptAndWrite = data =>
+                        jcrypt.encrypt(
+                            JSON.stringify(bar(JSON.parse(data)), null, 4),
+                        gpgArgs)
                         .then(util.writeFile.bind(null, treeFile, defaultFileOptions));
-                    });
+
+                    jcrypt.decryptFile(treeFile)
+                    .then(encryptAndWrite)
+                    .catch(logError);
                 }
             });
         } else {
             const dirname = path.dirname(key);
             const basedir = dirname !== '.' ? `${filedir}/${dirname}` : filedir;
             const hashedFilename = util.hashFilename(path.basename(key));
+
+            const bar = util.writeKeyToFile.bind(null, key, dirname, hashedFilename);
+            const encryptAndWrite = data =>
+                jcrypt.encrypt(
+                    JSON.stringify(bar(JSON.parse(data)), null, 4),
+                gpgArgs)
+                .then(util.writeFile.bind(null, treeFile, defaultFileOptions));
 
             const createEncryptedFile = () =>
                 jcrypt.encrypt(key, gpgArgs)
@@ -70,14 +79,7 @@ const file = {
                 //
                 .then(() =>
                     jcrypt.decryptFile(treeFile)
-                    .then(data => {
-                        let list = JSON.parse(data);
-
-                        util.writeKeyToFile(list, hashedFilename, key, dirname);
-
-                        jcrypt.encrypt(JSON.stringify(list, null, 4), gpgArgs)
-                        .then(util.writeFile.bind(null, treeFile, defaultFileOptions));
-                    })
+                    .then(encryptAndWrite)
                     .catch(logError)
                 )
                 .then(() => logSuccess('File created successfully'))

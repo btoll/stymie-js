@@ -90,7 +90,7 @@ stymie get example.com --field password | pbcopy
 
     Command | Description
     ------- | --------
-    add-file | Adds a new file
+    add-file | Adds a new file or directory
     edit-file | Edits a file
     get-file | Retrieves a file
     has-file | Checks if the file exists

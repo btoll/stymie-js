@@ -75,6 +75,8 @@ const util = {
         return crypto.createHash(gpgOptions.hash).update(file).digest('hex');
     },
 
+    makeListOfDirs: dirname => dirname.replace(/^\/|\/$/g, '').split('/'),
+
     noBlanks: input => {
         let res = true;
 
@@ -99,12 +101,7 @@ const util = {
 
     setGPGOptions: data => gpgOptions = JSON.parse(data),
 
-    writeDirsToFile: (list, key) => {
-        const dirs = key.replace(/^\/|\/$/g, '').split('/');
-        return util.writeEntry(list, dirs);
-    },
-
-    writeEntry: (list, it) => {
+    writeDirs: (list, it) => {
         let l = list;
 
         for (let dir of it) {
@@ -115,18 +112,10 @@ const util = {
             l = l[dir];
         }
 
-        return l;
+        return list;
     },
 
-    writeKeyToFile: (list, hashedFilename, key, dirname) => {
-        let l = list;
-
-        if (dirname !== '.') {
-            l = util.writeEntry(l, dirname.split('/'));
-        }
-
-        l[hashedFilename] = path.basename(key);
-    },
+    writeDirsToFile: (dirname, list) => util.writeDirs(list, util.makeListOfDirs(dirname)),
 
     // TODO: (dest, data, writeOptions = defaultWriteOptions)
     // `enciphered` last file partial application!
@@ -139,7 +128,22 @@ const util = {
                     resolve(dest);
                 }
             })
-        )
+        ),
+
+    writeKeyToFile: (key, dirname, hashedFilename, list) => {
+        if (dirname !== '.') {
+            util.writeDirsToFile(dirname, list);
+
+            // Now write the file into the last object.
+            util.makeListOfDirs(dirname).reduce(
+                (acc, curr) => (acc = acc[curr], acc), list
+            )[hashedFilename] = path.basename(key);
+        } else {
+            list[hashedFilename] = path.basename(key);
+        }
+
+        return list;
+    }
 };
 
 module.exports = util;
