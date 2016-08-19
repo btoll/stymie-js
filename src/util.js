@@ -3,6 +3,7 @@
 const crypto = require('crypto');
 const fs = require('fs');
 const logger = require('logger');
+const path = require('path');
 
 const logError = logger.error;
 const logWarn = logger.warn;
@@ -16,7 +17,7 @@ const defaultWriteOptions = {
 
 let gpgOptions = {};
 
-module.exports = {
+const util = {
     log: logger.log,
     logError: logError,
     logInfo: logger.info,
@@ -98,6 +99,35 @@ module.exports = {
 
     setGPGOptions: data => gpgOptions = JSON.parse(data),
 
+    writeDirsToFile: (list, key) => {
+        const dirs = key.replace(/^\/|\/$/g, '').split('/');
+        return util.writeEntry(list, dirs);
+    },
+
+    writeEntry: (list, it) => {
+        let l = list;
+
+        for (let dir of it) {
+            if (!l[dir]) {
+                l[dir] = {};
+            }
+
+            l = l[dir];
+        }
+
+        return l;
+    },
+
+    writeKeyToFile: (list, hashedFilename, key, dirname) => {
+        let l = list;
+
+        if (dirname !== '.') {
+            l = util.writeEntry(l, dirname.split('/'));
+        }
+
+        l[hashedFilename] = path.basename(key);
+    },
+
     // TODO: (dest, data, writeOptions = defaultWriteOptions)
     // `enciphered` last file partial application!
     writeFile: (dest, writeOptions, enciphered) =>
@@ -111,4 +141,6 @@ module.exports = {
             })
         )
 };
+
+module.exports = util;
 

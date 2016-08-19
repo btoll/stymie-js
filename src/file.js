@@ -38,27 +38,8 @@ const file = {
         const defaultFileOptions = util.getDefaultFileOptions();
         const gpgArgs = util.getGPGArgs();
 
-        const writeEntry = (list, it) => {
-            let l = list;
-
-            for (let dir of it) {
-                if (!l[dir]) {
-                    l[dir] = {};
-                }
-
-                l = l[dir];
-            }
-
-            return l;
-        };
-
         // Creating an already-existing dir doesn't throw, but maybe clean this up.
         if (/\/$/.test(key)) {
-            const writeDirsToFile = (list, key) => {
-                const dirs = key.replace(/^\/|\/$/g, '').split('/');
-                writeEntry(list, dirs);
-            };
-
             mkdirp(`${filedir}/${key}`, err => {
                 if (err) {
                     logError('Could not create directory');
@@ -66,8 +47,7 @@ const file = {
                     jcrypt.decryptFile(treeFile)
                     .then(data => {
                         let list = JSON.parse(data);
-
-                        list = writeDirsToFile(list, key);
+                        util.writeDirsToFile(list, key);
 
                         jcrypt.encrypt(JSON.stringify(list, null, 4), gpgArgs)
                         .then(util.writeFile.bind(null, treeFile, defaultFileOptions));
@@ -78,16 +58,6 @@ const file = {
             const dirname = path.dirname(key);
             const basedir = dirname !== '.' ? `${filedir}/${dirname}` : filedir;
             const hashedFilename = util.hashFilename(path.basename(key));
-
-            const writeKeyToFile = (list, hashedFilename, key) => {
-                let l = list;
-
-                if (dirname !== '.') {
-                    l = writeEntry(l, dirname.split('/'));
-                }
-
-                l[hashedFilename] = path.basename(key);
-            };
 
             const createEncryptedFile = () =>
                 jcrypt.encrypt(key, gpgArgs)
@@ -103,7 +73,7 @@ const file = {
                     .then(data => {
                         let list = JSON.parse(data);
 
-                        writeKeyToFile(list, hashedFilename, key);
+                        util.writeKeyToFile(list, hashedFilename, key, dirname);
 
                         jcrypt.encrypt(JSON.stringify(list, null, 4), gpgArgs)
                         .then(util.writeFile.bind(null, treeFile, defaultFileOptions));
