@@ -153,16 +153,18 @@ const file = {
 
             fs.readdir(filedir, (err, files) => {
                 if (!files.length) {
-                    util.logInfo('No files');
+                    logInfo('No files');
                 } else {
-//                    files.forEach(file => logInfo(list[file]));
-                    files.forEach(file => {
-                        if (typeof list[file] === 'object') {
-                            logInfo(`${file}/`);
-                        } else {
-                            logInfo(list[file]);
-                        }
-                    });
+                    const entries = files.reduce((acc, curr) => (
+                        acc.push(
+                            typeof list[curr] === 'object' ?
+                                `${curr}/` :
+                                list[curr]
+                        ),
+                        acc
+                    ), []);
+
+                    logInfo(`Installed files: \n${entries.join('\n')}`);
                 }
             });
         })
