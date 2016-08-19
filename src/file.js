@@ -1,5 +1,6 @@
 'use strict';
 
+const R = require('ramda');
 const cp = require('child_process');
 const fs = require('fs');
 const inquirer = require('inquirer');
@@ -35,8 +36,39 @@ const file = {
             return;
         }
 
+        const dirname = path.dirname(key);
+        const basedir = dirname !== '.' ? `${filedir}/${dirname}` : filedir;
         const defaultFileOptions = util.getDefaultFileOptions();
         const gpgArgs = util.getGPGArgs();
+        const hashedFilename = util.hashFilename(path.basename(key));
+        const writeFile = util.writeFile(defaultFileOptions);
+        const writeKeyFile = writeFile(`${basedir}/${hashedFilename}`);
+
+        const stringifyTreeFile = data => JSON.stringify(data, null, 4);
+        const writeDirsToTreeFile = util.writeDirsToTreeFile(key);
+        const writeKeyToTreeFile = util.writeKeyToTreeFile(key);
+        const writeTreeFile = writeFile(treeFile);
+        const encryptData = jcrypt.encrypt(gpgArgs);
+
+        // Now that the new file has been added we need to record it in the "treefile"
+        // in order to do lookups.
+        const writeDirsToTreeFilePipe = R.compose(encryptData, stringifyTreeFile, writeDirsToTreeFile, JSON.parse);
+        const writeKeyToTreeFilePipe = R.compose(encryptData, stringifyTreeFile, writeKeyToTreeFile, JSON.parse);
+
+        const decryptAndEncryptTreeFile = R.composeP(
+            R.composeP(writeTreeFile, writeDirsToTreeFilePipe, jcrypt.decryptFile)
+        );
+
+        const decryptAndEncryptTreeFile2 = R.composeP(
+            R.composeP(writeTreeFile, writeKeyToTreeFilePipe, jcrypt.decryptFile)
+        );
+
+        const createEncryptedFile = () =>
+            encryptData(key)
+            .then(writeKeyFile)
+            .then(() => decryptAndEncryptTreeFile2(treeFile))
+            .then(() => logSuccess('File created successfully'))
+            .catch(logError);
 
         // Creating an already-existing dir doesn't throw, but maybe clean this up.
         if (/\/$/.test(key)) {
@@ -44,47 +76,10 @@ const file = {
                 if (err) {
                     logError('Could not create directory');
                 } else {
-                    const bar = util.writeDirsToFile.bind(null, key);
-                    const encryptAndWrite = data =>
-                        jcrypt.encrypt(
-                            JSON.stringify(bar(JSON.parse(data)), null, 4),
-                        gpgArgs)
-                        .then(util.writeFile.bind(null, treeFile, defaultFileOptions));
-
-                    jcrypt.decryptFile(treeFile)
-                    .then(encryptAndWrite)
-                    .catch(logError);
+                    decryptAndEncryptTreeFile(treeFile);
                 }
             });
         } else {
-            const dirname = path.dirname(key);
-            const basedir = dirname !== '.' ? `${filedir}/${dirname}` : filedir;
-            const hashedFilename = util.hashFilename(path.basename(key));
-
-            const bar = util.writeKeyToFile.bind(null, key, dirname, hashedFilename);
-            const encryptAndWrite = data =>
-                jcrypt.encrypt(
-                    JSON.stringify(bar(JSON.parse(data)), null, 4),
-                gpgArgs)
-                .then(util.writeFile.bind(null, treeFile, defaultFileOptions));
-
-            const createEncryptedFile = () =>
-                jcrypt.encrypt(key, gpgArgs)
-                .then(util.writeFile.bind(null, `${basedir}/${hashedFilename}`, defaultFileOptions))
-                // Now that the new file has been added we need to record it in the "treefile"
-                // in order to do lookups.
-                // For example:
-                //
-                //      hashedFilename => plaintext
-                //
-                .then(() =>
-                    jcrypt.decryptFile(treeFile)
-                    .then(encryptAndWrite)
-                    .catch(logError)
-                )
-                .then(() => logSuccess('File created successfully'))
-                .catch(logError);
-
             // This seems counter-intuitive because the resolve and reject operations
             // are reversed, but this is b/c the success case is when the file does not
             // exist (and thus will throw an exception).

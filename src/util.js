@@ -1,5 +1,6 @@
 'use strict';
 
+const R = require('ramda');
 const crypto = require('crypto');
 const fs = require('fs');
 const logger = require('logger');
@@ -115,11 +116,10 @@ const util = {
         return list;
     },
 
-    writeDirsToFile: (dirname, list) => util.writeDirs(list, util.makeListOfDirs(dirname)),
+    writeDirsToTreeFile: R.curry((dirname, list) => util.writeDirs(list, util.makeListOfDirs(dirname))),
 
-    // TODO: (dest, data, writeOptions = defaultWriteOptions)
-    // `enciphered` last file partial application!
-    writeFile: (dest, writeOptions, enciphered) =>
+    // TODO: (writeOptions = defaultWriteOptions, dest, data)
+    writeFile: R.curry((writeOptions, dest, enciphered) =>
         new Promise((resolve, reject) =>
             fs.writeFile(dest, enciphered, writeOptions || defaultWriteOptions, err => {
                 if (err) {
@@ -128,11 +128,14 @@ const util = {
                     resolve(dest);
                 }
             })
-        ),
+        )),
 
-    writeKeyToFile: (key, dirname, hashedFilename, list) => {
+    writeKeyToTreeFile: R.curry((key, list) => {
+        const dirname = path.dirname(key);
+        const hashedFilename = util.hashFilename(path.basename(key));
+
         if (dirname !== '.') {
-            util.writeDirsToFile(dirname, list);
+            util.writeDirsToTreeFile(dirname, list);
 
             // Now write the file into the last object.
             util.makeListOfDirs(dirname).reduce(
@@ -143,7 +146,7 @@ const util = {
         }
 
         return list;
-    }
+    })
 };
 
 module.exports = util;
