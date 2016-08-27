@@ -31,13 +31,13 @@
     "jcrypt": "git+https://github.com/btoll/jcrypt.git",
     "logger": "git+https://github.com/btoll/logger.git",
     "mkdirp": "^0.5.1",
+    "ramda": "^0.22.1",
     "sillypass": "git+https://github.com/btoll/sillypass.git",
     "which": "^1.2.4",
     "yargs": "^3.31.0"
   },
   "devDependencies": {
-    "eslint": "^2.2.0",
-    "ramda": "^0.22.1"
+    "eslint": "^2.2.0"
   }
 }
 

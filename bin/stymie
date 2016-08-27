@@ -2,7 +2,7 @@
 
 const file = require('../src/file');
 const inquirer = require('inquirer');
-const install = require('../src/install');
+const init = require('../src/init');
 const jcrypt = require('jcrypt');
 const key = require('../src/key');
 const util = require('../src/util');
@@ -78,7 +78,7 @@ if (command === 'init') {
     // TODO: Allow multiple installations in multiple locations?
     util.fileExists(`${stymieDir}/c`)
     .then(() => util.logWarn('Stymie already exists!'))
-    .catch(install);
+    .catch(init);
 } else {
     util.fileExists(`${stymieDir}/c`)
     .then(configFile =>
@@ -131,7 +131,7 @@ if (command === 'init') {
             if (!answers.install) {
                 util.logInfo('Run `bash scripts/postinstall.bash` to install.');
             } else {
-                install();
+                init();
             }
         });
     });
