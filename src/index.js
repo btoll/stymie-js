@@ -142,7 +142,8 @@ const key = {
                     'No installed keys' :
                     `Installed keys: \n${keys.sort().join('\n')}`
             );
-        }),
+        })
+        .catch(logError),
 
     rm: key =>
         jcrypt.decryptFile(keyFile)

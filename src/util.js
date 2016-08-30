@@ -1,10 +1,8 @@
 'use strict';
 
 const R = require('ramda');
-const crypto = require('crypto');
 const fs = require('fs');
 const logger = require('logger');
-const path = require('path');
 
 const logError = logger.error;
 const logWarn = logger.warn;
@@ -68,16 +66,6 @@ const util = {
         return true;
     },
 
-    hashFilename: file => {
-        if (!file) {
-            return;
-        }
-
-        return crypto.createHash(gpgOptions.hash).update(file).digest('hex');
-    },
-
-    makeListOfDirs: dirname => dirname.replace(/^\/|\/$/g, '').split('/'),
-
     noBlanks: input => {
         let res = true;
 
@@ -102,22 +90,6 @@ const util = {
 
     setGPGOptions: data => gpgOptions = JSON.parse(data),
 
-    writeDirs: (list, it) => {
-        let l = list;
-
-        for (let dir of it) {
-            if (!l[dir]) {
-                l[dir] = {};
-            }
-
-            l = l[dir];
-        }
-
-        return list;
-    },
-
-    writeDirsToTreeFile: R.curry((dirname, list) => util.writeDirs(list, util.makeListOfDirs(dirname))),
-
     // TODO: (writeOptions = defaultWriteOptions, dest, data)
     writeFile: R.curry((writeOptions, dest, enciphered) =>
         new Promise((resolve, reject) =>
@@ -128,25 +100,7 @@ const util = {
                     resolve(dest);
                 }
             })
-        )),
-
-    writeKeyToTreeFile: R.curry((key, list) => {
-        const dirname = path.dirname(key);
-        const hashedFilename = util.hashFilename(path.basename(key));
-
-        if (dirname !== '.') {
-            util.writeDirsToTreeFile(dirname, list);
-
-            // Now write the file into the last object.
-            util.makeListOfDirs(dirname).reduce(
-                (acc, curr) => (acc = acc[curr], acc), list
-            )[hashedFilename] = path.basename(key);
-        } else {
-            list[hashedFilename] = path.basename(key);
-        }
-
-        return list;
-    })
+        ))
 };
 
 module.exports = util;

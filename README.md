@@ -48,19 +48,9 @@ Only Linux and OS X are supported at this time. There are no plans to support Wi
 stymie add example.com
 ```
 
-- Add an encrypted file with the key name `secrets`:
-```
-stymie add-file secrets
-```
-
 - Edit the `example.com` key:
 ```
 stymie edit example.com
-```
-
-- Delete the file with the key name `secrets`:
-```
-stymie rm-file secrets
 ```
 
 - Get just the `username` field value from the `example.com` key:
@@ -75,8 +65,6 @@ stymie get example.com --field password | pbcopy
 
 ## Usage
 
-### Commands that operate on password manager entries
-
     Command | Description
     ------- | --------
     add | Adds a new entry
@@ -85,17 +73,6 @@ stymie get example.com --field password | pbcopy
     has | Checks if the entry exists
     list | List all entries
     rm | Deletes an entry
-
-### Commands that operate on files
-
-    Command | Description
-    ------- | --------
-    add-file | Adds a new file or directory
-    edit-file | Edits a file
-    get-file | Retrieves a file
-    has-file | Checks if the file exists
-    list-file | List all files (TODO)
-    rm-file | Deletes a file
 
 ### Other commands and options
 

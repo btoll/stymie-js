@@ -118,13 +118,13 @@ module.exports = () =>
             logSuccess(`Created encrypted entries directory ${dir}`);
 
             // Create config file.
-            return jcrypt.encrypt(JSON.stringify({
+            return jcrypt.encrypt(gpgOptions, JSON.stringify({
                 armor: armor,
                 hash: answers.hash,
                 recipient: recipient,
                 sign: sign
-            }, null, 4), gpgOptions)
-            .then(util.writeFile.bind(null, `${stymieDir}/c`, util.getDefaultFileOptions()))
+            }, null, 4))
+            .then(util.writeFile(defaultFileOptions, `${stymieDir}/c`))
             .catch(logError);
         })
         .then(file => {
@@ -132,21 +132,12 @@ module.exports = () =>
 
             // Create entry list file.
             // TODO: DRY!
-            return jcrypt.encrypt(JSON.stringify({}, null, 4), gpgOptions)
-            .then(util.writeFile.bind(null, `${stymieDir}/k`, defaultFileOptions))
+            return jcrypt.encrypt(gpgOptions, JSON.stringify({}, null, 4))
+            .then(util.writeFile(defaultFileOptions, `${stymieDir}/k`))
             .catch(logError);
         })
         .then(file => {
             logSuccess(`Created encrypted entries list file ${file}`);
-
-            // Create tree file (captures the names of the files in s/).
-            // TODO: DRY!
-            return jcrypt.encrypt(JSON.stringify({}, null, 4), gpgOptions)
-            .then(util.writeFile.bind(null, `${stymieDir}/f`, defaultFileOptions))
-            .catch(logError);
-        })
-        .then(file => {
-            logSuccess(`Created encrypted tree file ${file}`);
 
             if (answers.histignore) {
                 const histignoreFile = `${home}/${answers.histignoreFile}`;
