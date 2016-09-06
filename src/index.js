@@ -47,26 +47,21 @@ const key = {
 
                 inquirer.prompt(prompts, answers => {
                     const entry = answers.key;
-                    let item = list[key];
 
                     if (entry !== key) {
-                        // Remove old key.
+                        // Rename the key.
                         delete list[key];
-
-                        item = list[key] = {};
-
-                        // Note if the key has changed the condition
-                        // below will always pass.
+                        list[entry] = {};
                     }
 
                     for (const n in answers) {
                         if (answers.hasOwnProperty(n) && n !== 'key') {
-                            item[n] = answers[n];
+                            list[entry][n] = answers[n];
                         }
                     }
 
-                    jcrypt.encrypt(JSON.stringify(list, null, 4), util.getGPGArgs())
-                    .then(util.writeFile.bind(null, keyFile, util.getDefaultFileOptions()))
+                    jcrypt.encrypt(util.getGPGArgs(), JSON.stringify(list, null, 4))
+                    .then(util.writeFile(util.getDefaultFileOptions(), keyFile))
                     .then(() => logSuccess('Key has been updated'))
                     .catch(logError);
                 });
@@ -168,7 +163,7 @@ const key = {
         })
         .then(list =>
             jcrypt.encrypt(JSON.stringify(list, null, 4), util.getGPGArgs())
-            .then(util.writeFile.bind(null, keyFile, util.getDefaultFileOptions()))
+            .then(util.writeFile(util.getDefaultFileOptions(), keyFile))
             .then(() => logSuccess('Key has been removed'))
             .catch(logError)
         )
