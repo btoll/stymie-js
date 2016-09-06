@@ -54,11 +54,6 @@ module.exports = () =>
         ],
         default: true
     }, {
-        type: 'input',
-        name: 'hash',
-        message: 'What hashing algorithm should be used for the password filenames?',
-        default: 'sha256WithRSAEncryption'
-    }, {
         type: 'list',
         name: 'histignore',
         message: 'Should "stymie *" be prepended to the value of $HISTIGNORE?',
@@ -112,15 +107,9 @@ module.exports = () =>
         .then(dir => {
             logSuccess(`Created project directory ${dir}`);
 
-            return mkDir(`${stymieDir}/s`);
-        })
-        .then(dir => {
-            logSuccess(`Created encrypted entries directory ${dir}`);
-
             // Create config file.
             return jcrypt.encrypt(gpgOptions, JSON.stringify({
                 armor: armor,
-                hash: answers.hash,
                 recipient: recipient,
                 sign: sign
             }, null, 4))
