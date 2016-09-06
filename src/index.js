@@ -23,13 +23,9 @@ const key = {
         .then(data => {
             const list = JSON.parse(data);
             const entry = list[key];
-            let prompts, hasChanged;
+            let prompts;
 
             if (entry) {
-                hasChanged = {
-                    changed: false
-                };
-
                 prompts = [{
                     type: 'input',
                     name: 'key',
@@ -44,8 +40,7 @@ const key = {
                             type: 'input',
                             name: n,
                             message: `Edit ${n}:`,
-                            default: entry[n],
-                            validate: util.hasChanged.bind(null, hasChanged, n)
+                            default: entry[n]
                         });
                     }
                 }
@@ -64,20 +59,16 @@ const key = {
                         // below will always pass.
                     }
 
-                    if (hasChanged.changed) {
-                        for (const n in answers) {
-                            if (answers.hasOwnProperty(n) && n !== 'key') {
-                                item[n] = answers[n];
-                            }
+                    for (const n in answers) {
+                        if (answers.hasOwnProperty(n) && n !== 'key') {
+                            item[n] = answers[n];
                         }
-
-                        jcrypt.encrypt(JSON.stringify(list, null, 4), util.getGPGArgs())
-                        .then(util.writeFile.bind(null, keyFile, util.getDefaultFileOptions()))
-                        .then(() => logSuccess('Key has been updated'))
-                        .catch(logError);
-                    } else {
-                        logInfo('No change');
                     }
+
+                    jcrypt.encrypt(JSON.stringify(list, null, 4), util.getGPGArgs())
+                    .then(util.writeFile.bind(null, keyFile, util.getDefaultFileOptions()))
+                    .then(() => logSuccess('Key has been updated'))
+                    .catch(logError);
                 });
             } else {
                 logInfo('No matching key');

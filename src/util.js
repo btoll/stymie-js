@@ -58,14 +58,6 @@ const util = {
         };
     },
 
-    hasChanged: (hasChanged, originalValue, input) => {
-        if (originalValue !== input) {
-            hasChanged.changed = true;
-        }
-
-        return true;
-    },
-
     noBlanks: input => {
         let res = true;
 
