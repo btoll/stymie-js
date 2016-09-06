@@ -48,7 +48,7 @@ function makePassphrase(generatePassword, entry) {
 }
 
 function getNewKeyInfo(key) {
-    jcrypt.readFile(keyFile, ['--decrypt'])
+    jcrypt.decryptFile(keyFile)
     .then(data => {
         const list = JSON.parse(data);
 
@@ -126,7 +126,7 @@ function getNewFields(entry) {
 }
 
 function makeEntry(entry) {
-    jcrypt.readFile(keyFile, ['--decrypt'])
+    jcrypt.decryptFile(keyFile)
     .then(data => {
         const list = JSON.parse(data);
         const item = list[entry.key] = {};
@@ -137,12 +137,8 @@ function makeEntry(entry) {
             }
         }
 
-        return jcrypt.streamDataToFile(
-            JSON.stringify(list, null, 4),
-            keyFile,
-            util.getDefaultFileOptions(),
-            util.getGPGArgs()
-        );
+        return jcrypt.encrypt(util.getGPGArgs(), JSON.stringify(list, null, 4))
+        .then(util.writeFile(util.getDefaultFileOptions(), keyFile));
     })
     .then(() => logSuccess('Entry created successfully'))
     .catch(logError);
