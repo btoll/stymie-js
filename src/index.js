@@ -15,6 +15,26 @@ const env = process.env;
 const keyFile = `${env.STYMIE || env.HOME}/.stymie.d/k`;
 const reWhitespace = /\s/g;
 
+function getNewFields(entry, list) {
+    inquirer.prompt(util.getNewFieldsPrompts(), answers => {
+        if (!answers.createNewField) {
+            for (let answer of Object.keys(answers)) {
+                if (answer !== 'createNewField') {
+                    list[entry][answer] = answers[answer];
+                }
+            }
+
+            jcrypt.encrypt(util.getGPGArgs(), JSON.stringify(list, null, 4))
+            .then(util.writeFile(util.getDefaultFileOptions(), keyFile))
+            .then(() => logSuccess('Key has been updated'))
+            .catch(logError);
+        } else {
+            list[entry][answers.name] = answers.value;
+            getNewFields(entry, list);
+        }
+    });
+}
+
 const key = {
     add: generateEntry,
 
@@ -34,15 +54,13 @@ const key = {
                     validate: util.noDuplicates.bind(null, key, list)
                 }];
 
-                for (const n in entry) {
-                    if (entry.hasOwnProperty(n)) {
-                        prompts.push({
-                            type: 'input',
-                            name: n,
-                            message: `Edit ${n}:`,
-                            default: entry[n]
-                        });
-                    }
+                for (let n of Object.keys(entry)) {
+                    prompts.push({
+                        type: 'input',
+                        name: n,
+                        message: `Edit ${n}:`,
+                        default: entry[n]
+                    });
                 }
 
                 inquirer.prompt(prompts, answers => {
@@ -54,16 +72,13 @@ const key = {
                         list[entry] = {};
                     }
 
-                    for (const n in answers) {
-                        if (answers.hasOwnProperty(n) && n !== 'key') {
-                            list[entry][n] = answers[n];
+                    for (let answer in answers) {
+                        if (answer !== 'key') {
+                            list[entry][answer] = answers[answer];
                         }
                     }
 
-                    jcrypt.encrypt(util.getGPGArgs(), JSON.stringify(list, null, 4))
-                    .then(util.writeFile(util.getDefaultFileOptions(), keyFile))
-                    .then(() => logSuccess('Key has been updated'))
-                    .catch(logError);
+                    answers = getNewFields(entry, list);
                 });
             } else {
                 logInfo('No matching key');
@@ -81,8 +96,8 @@ const key = {
 
             if (entry) {
                 if (!field) {
-                    for (const n in entry) {
-                        if (entry.hasOwnProperty(n) && n !== 'needle') {
+                    for (let n of Object.keys(entry)) {
+                        if (n !== 'needle') {
                             logRaw(`${n}: ${key.stripped(entry[n])}`);
                         }
                     }
@@ -162,7 +177,7 @@ const key = {
             });
         })
         .then(list =>
-            jcrypt.encrypt(JSON.stringify(list, null, 4), util.getGPGArgs())
+            jcrypt.encrypt(util.getGPGArgs(), JSON.stringify(list, null, 4))
             .then(util.writeFile(util.getDefaultFileOptions(), keyFile))
             .then(() => logSuccess('Key has been removed'))
             .catch(logError)

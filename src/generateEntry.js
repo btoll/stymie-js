@@ -20,31 +20,15 @@ function* generateEntry(key) {
     yield makeEntry(entry);
 }
 
-function makePassphrase(generatePassword, entry) {
-    if (entry.password !== undefined) {
-        iter.next(entry);
-    } else {
-        const password = generatePassword.generate();
-
-        log(password);
-
-        inquirer.prompt([{
-            type: 'list',
-            name: 'accept',
-            message: 'Accept?:',
-            choices: [
-                {name: 'Yes', value: true},
-                {name: 'No, generate another', value: false}
-            ]
-        }], answers => {
-            if (answers.accept) {
-                entry.password = password;
-                iter.next(entry);
-            } else {
-                makePassphrase(generatePassword, entry);
-            }
-        });
-    }
+function getNewFields(entry) {
+    inquirer.prompt(util.getNewFieldsPrompts(), answers => {
+        if (!answers.createNewField) {
+            iter.next(entry);
+        } else {
+            entry[answers.name] = answers.value;
+            getNewFields(entry);
+        }
+    });
 }
 
 function getNewKeyInfo(key) {
@@ -94,37 +78,6 @@ function getNewKeyInfo(key) {
     .catch(logError);
 }
 
-function getNewFields(entry) {
-    inquirer.prompt([{
-        type: 'list',
-        name: 'newField',
-        message: 'Create another field?:',
-        choices: [
-            {name: 'Yes', value: true},
-            {name: 'No', value: false}
-        ]
-    }, {
-        type: 'input',
-        name: 'name',
-        message: 'Name:',
-        validate: util.noBlanks,
-        when: answers => answers.newField
-    }, {
-        type: 'input',
-        name: 'value',
-        message: 'Value:',
-        validate: util.noBlanks,
-        when: answers => answers.newField
-    }], answers => {
-        if (!answers.newField) {
-            iter.next(entry);
-        } else {
-            entry[answers.name] = answers.value;
-            getNewFields(entry);
-        }
-    });
-}
-
 function makeEntry(entry) {
     jcrypt.decryptFile(keyFile)
     .then(data => {
@@ -142,6 +95,33 @@ function makeEntry(entry) {
     })
     .then(() => logSuccess('Entry created successfully'))
     .catch(logError);
+}
+
+function makePassphrase(generatePassword, entry) {
+    if (entry.password !== undefined) {
+        iter.next(entry);
+    } else {
+        const password = generatePassword.generate();
+
+        log(password);
+
+        inquirer.prompt([{
+            type: 'list',
+            name: 'accept',
+            message: 'Accept?:',
+            choices: [
+                {name: 'Yes', value: true},
+                {name: 'No, generate another', value: false}
+            ]
+        }], answers => {
+            if (answers.accept) {
+                entry.password = password;
+                iter.next(entry);
+            } else {
+                makePassphrase(generatePassword, entry);
+            }
+        });
+    }
 }
 
 module.exports = key => {
