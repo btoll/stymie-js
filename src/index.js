@@ -96,10 +96,10 @@ const key = {
 
             if (entry) {
                 if (!field) {
+                    logRaw(`key: ${needle}`);
+
                     for (let n of Object.keys(entry)) {
-                        if (n !== 'needle') {
-                            logRaw(`${n}: ${key.stripped(entry[n])}`);
-                        }
+                        logRaw(`${n}: ${key.stripped(entry[n])}`);
                     }
                 } else {
                     const f = entry[field];
