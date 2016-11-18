@@ -24,7 +24,7 @@ function getNewFields(entry, list) {
                 }
             }
 
-            jcrypt.encrypt(util.getGPGArgs(), JSON.stringify(list, null, 4))
+            util.encrypt(JSON.stringify(list, null, 4))
             .then(util.writeFile(util.getDefaultFileOptions(), keyFile))
             .then(() => logSuccess('Key has been updated'))
             .catch(logError);
@@ -177,7 +177,7 @@ const key = {
             });
         })
         .then(list =>
-            jcrypt.encrypt(util.getGPGArgs(), JSON.stringify(list, null, 4))
+            util.encrypt(JSON.stringify(list, null, 4))
             .then(util.writeFile(util.getDefaultFileOptions(), keyFile))
             .then(() => logSuccess('Key has been removed'))
             .catch(logError)

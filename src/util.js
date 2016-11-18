@@ -2,10 +2,12 @@
 
 const R = require('ramda');
 const fs = require('fs');
+const jcrypt = require('jcrypt');
 const logger = require('logger');
 
 const logError = logger.error;
 const logWarn = logger.warn;
+
 const defaultWriteOptions = {
     defaultEncoding: 'utf8',
     encoding: 'utf8',
@@ -14,8 +16,6 @@ const defaultWriteOptions = {
     mode: 0o0600
 };
 
-let gpgOptions = {};
-
 const util = {
     log: logger.log,
     logError: logError,
@@ -23,6 +23,9 @@ const util = {
     logRaw: logger.raw,
     logSuccess: logger.success,
     logWarn: logWarn,
+
+    // Will be defined in #setGPGOptions.
+    encrypt: null,
 
     fileExists: path =>
         new Promise((resolve, reject) =>
@@ -34,29 +37,6 @@ const util = {
                 }
             })
         ),
-
-    getDefaultFileOptions: () => {
-        return {
-            flags: 'w',
-            defaultEncoding: 'utf8',
-            fd: null,
-            mode: 0o0600
-        };
-    },
-
-    getGPGArgs: () => {
-        let arr = ['-r', gpgOptions.recipient];
-
-        if (gpgOptions.armor) {
-            arr.push('--armor');
-        }
-
-        if (gpgOptions.sign) {
-            arr.push('--sign');
-        }
-
-        return arr;
-    },
 
     getNewFieldsPrompts: () =>
         [{
@@ -103,12 +83,25 @@ const util = {
         return res;
     },
 
-    setGPGOptions: data => gpgOptions = JSON.parse(data),
+    setGPGOptions: options => {
+        const gpgOptions = [
+            '-r', options.recipient
+        ];
 
-    // TODO: (writeOptions = defaultWriteOptions, dest, data)
-    writeFile: R.curry((writeOptions, dest, enciphered) =>
+        if (options.armor) {
+            gpgOptions.push('--armor');
+        }
+
+        if (options.sign) {
+            gpgOptions.push('--sign');
+        }
+
+        util.encrypt = jcrypt.encrypt(gpgOptions);
+    },
+
+    writeFile: R.curry((dest, enciphered) =>
         new Promise((resolve, reject) =>
-            fs.writeFile(dest, enciphered, writeOptions || defaultWriteOptions, err => {
+            fs.writeFile(dest, enciphered, defaultWriteOptions, err => {
                 if (err) {
                     reject(err);
                 } else {

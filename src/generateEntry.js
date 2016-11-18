@@ -90,8 +90,8 @@ function makeEntry(entry) {
             }
         }
 
-        return jcrypt.encrypt(util.getGPGArgs(), JSON.stringify(list, null, 4))
-        .then(util.writeFile(util.getDefaultFileOptions(), keyFile));
+        return util.encrypt(JSON.stringify(list, null, 4))
+        .then(util.writeFile(keyFile));
     })
     .then(() => logSuccess('Entry created successfully'))
     .catch(logError);
