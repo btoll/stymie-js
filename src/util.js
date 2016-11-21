@@ -85,7 +85,7 @@ const util = {
 
     setGPGOptions: options => {
         const gpgOptions = [
-            '-r', options.recipient
+            '--hidden-recipient', options.recipient
         ];
 
         if (options.armor) {

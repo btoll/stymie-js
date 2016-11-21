@@ -23,6 +23,7 @@ securityAnswer: '1st Avenue'
 
 - Uses GPG/PGP public-key cryptography to encrypt everything (even configs).
 - Uses OS-level permissions-based access control so only the user can view and list any files created by the user.
+- Encrypts using the `--hidden-recipient` flag so as to not include the recipient's key ID in the encrypted file.
 - Cryptographically hashes the key name as the filename when creating encrypted files.
 - Uses the [shred] utility to overwrite any removed file in-place (including a final pass of zeroes to hide the shredding) before unlinking. Will default to `rm` when `shred` isn't installed.
 - When using Vim to edit any files (the default), does not leave any swap or backup files during or after editing.
