@@ -25,7 +25,7 @@ function getNewFields(entry, list) {
             }
 
             util.encrypt(JSON.stringify(list, null, 4))
-            .then(util.writeFile(util.getDefaultFileOptions(), keyFile))
+            .then(util.writeFile(keyFile))
             .then(() => logSuccess('Key has been updated'))
             .catch(logError);
         } else {
@@ -178,7 +178,7 @@ const key = {
         })
         .then(list =>
             util.encrypt(JSON.stringify(list, null, 4))
-            .then(util.writeFile(util.getDefaultFileOptions(), keyFile))
+            .then(util.writeFile(keyFile))
             .then(() => logSuccess('Key has been removed'))
             .catch(logError)
         )
