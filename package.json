@@ -1,15 +1,11 @@
 {
   "name": "stymie",
   "version": "0.4.0",
-  "description": "Cryptographically secure password manager for NodeJS",
+  "description": "Cryptographically secure password manager",
   "bin": {
     "stymie": "./bin/stymie"
   },
   "main": "./src/index.js",
-  "scripts": {
-    "lint": "eslint src bin",
-    "test": "npm run lint"
-  },
   "keywords": [
     "password manager",
     "GPG",
@@ -36,7 +32,17 @@
     "yargs": "^3.31.0"
   },
   "devDependencies": {
-    "eslint": "^2.2.0"
+    "coveralls": "^2.11.15",
+    "eslint": "^2.2.0",
+    "istanbul": "^0.4.5"
+  },
+  "scripts": {
+    "clean": "rm -rf build coverage",
+    "coverage": "JASMINE_CONFIG_PATH=jasmine.json istanbul cover jasmine --captureExceptions",
+    "coveralls": "npm run coverage && cat ./coverage/lcov.info | ./node_modules/coveralls/bin/coveralls.js && rm -rf ./coverage",
+    "lint": "eslint spec src",
+    "specs": "JASMINE_CONFIG_PATH=jasmine.json jasmine",
+    "test": "npm run clean && npm run lint && npm run specs"
   }
 }
 

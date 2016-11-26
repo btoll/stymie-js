@@ -1,6 +1,7 @@
 # Stymie
 
 [![Build Status](https://travis-ci.org/btoll/stymie.svg?branch=master)](https://travis-ci.org/btoll/stymie)
+[![Coverage Status](https://coveralls.io/repos/github/btoll/stymie/badge.svg?branch=master)](https://coveralls.io/github/btoll/stymie?branch=master)
 
 ## Features
 
