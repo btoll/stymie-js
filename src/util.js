@@ -38,29 +38,6 @@ const util = {
             })
         ),
 
-    getNewFieldsPrompts: () =>
-        [{
-            type: 'list',
-            name: 'createNewField',
-            message: 'Create another field?:',
-            choices: [
-                {name: 'Yes', value: true},
-                {name: 'No', value: false}
-            ]
-        }, {
-            type: 'input',
-            name: 'name',
-            message: 'Name:',
-            validate: util.noBlanks,
-            when: answers => answers.createNewField
-        }, {
-            type: 'input',
-            name: 'value',
-            message: 'Value:',
-            validate: util.noBlanks,
-            when: answers => answers.createNewField
-        }],
-
     noBlanks: input => {
         let res = true;
 

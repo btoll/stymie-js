@@ -1,2 +1,5 @@
 node_modules
+coverage
+spec/.gnupg/random_seed
+**/*.orig
 

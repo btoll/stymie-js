@@ -1,0 +1,223 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<style>
+* {
+    margin: 0;
+    padding: 0;
+}
+
+h3 {
+    background: #726d6d;
+    border: 0px solid #000;
+    border-top-width: 2px;
+    color: #fff;
+    font-weight: normal;
+    padding: 10px 10px 10px 20px;
+}
+
+div > p {
+    padding: 10px;
+}
+
+p.stripe {
+    background: #ddd;
+    border: 0px solid #000;
+    border-top-width: 2px;
+}
+
+span {
+    color: #888;
+}
+
+span.it {
+    color: #eab560;
+}
+
+span.describe {
+    color: #207ab2;
+    margin-right: 5px;
+}
+
+span + span {
+    color: #000;
+    font-weight: bold;
+}
+
+span.fdescribe + span,
+span.xdescribe + span {
+    color: green;
+}
+
+span.fit + span,
+span.xit + span {
+    color: green;
+}
+
+a:link,
+a:visited,
+a:hover,
+a:active {
+    color: #207ab2;
+}
+
+span.fdescribe a:link,
+span.fdescribe a:visited,
+span.fdescribe a:hover,
+span.fdescribe a:active,
+
+span.xdescribe a:link,
+span.xdescribe a:visited,
+span.xdescribe a:hover,
+span.xdescribe a:active {
+    color: #888;
+}
+</style>
+</head>
+
+<body>
+<h3>Test suite 'stymie'</h3>
+<div style=""><p class="stripe">
+                <span class="describe">
+                    (<a href="#">describe</a>)
+                </span>
+                <span>'#add'</span>
+            </p><div><div style="padding-left: 50px;"><p class="">
+                <span class="it">
+                    it -> 
+                </span>
+                <span>'should reject when no key name is given'</span>
+            </p></div><div style="padding-left: 50px;"><p class="">
+                <span class="it">
+                    it -> 
+                </span>
+                <span>'should add a new key'</span>
+            </p></div><div style="padding-left: 50px;"><p class="">
+                <span class="it">
+                    it -> 
+                </span>
+                <span>'should not add a duplicate key'</span>
+            </p></div></div></div><div style=""><p class="stripe">
+                <span class="describe">
+                    (<a href="#">describe</a>)
+                </span>
+                <span>'#generate'</span>
+            </p><div><div style="padding-left: 50px;"><p class="">
+                <span class="it">
+                    it -> 
+                </span>
+                <span>'should generate a passphrase'</span>
+            </p></div></div></div><div style=""><p class="stripe">
+                <span class="describe">
+                    (<a href="#">describe</a>)
+                </span>
+                <span>'#get'</span>
+            </p><div><div style="padding-left: 50px;"><p class="">
+                <span class="it">
+                    it -> 
+                </span>
+                <span>'should reject when no key name is given'</span>
+            </p></div><div style="padding-left: 50px;"><p class="">
+                <span class="describe">
+                    (<a href="#">describe</a>)
+                </span>
+                <span>'getting a key'</span>
+            </p><div><div style="padding-left: 50px;"><p class="">
+                <span class="it">
+                    it -> 
+                </span>
+                <span>'should be a no-op when a non-existing key is given'</span>
+            </p></div><div style="padding-left: 50px;"><p class="">
+                <span class="it">
+                    it -> 
+                </span>
+                <span>'should return the key values for an existing key'</span>
+            </p></div></div></div><div style="padding-left: 50px;"><p class="">
+                <span class="describe">
+                    (<a href="#">describe</a>)
+                </span>
+                <span>'getting a field'</span>
+            </p><div><div style="padding-left: 50px;"><p class="">
+                <span class="it">
+                    it -> 
+                </span>
+                <span>'should be a no-op when the field does not exist'</span>
+            </p></div><div style="padding-left: 50px;"><p class="">
+                <span class="it">
+                    it -> 
+                </span>
+                <span>'should return the field value for an existing field'</span>
+            </p></div></div></div></div></div><div style=""><p class="stripe">
+                <span class="describe">
+                    (<a href="#">describe</a>)
+                </span>
+                <span>'#has'</span>
+            </p><div><div style="padding-left: 50px;"><p class="">
+                <span class="it">
+                    it -> 
+                </span>
+                <span>'should return true when the key exists'</span>
+            </p></div><div style="padding-left: 50px;"><p class="">
+                <span class="it">
+                    it -> 
+                </span>
+                <span>'should return false when the key does not exist'</span>
+            </p></div></div></div><div style=""><p class="stripe">
+                <span class="describe">
+                    (<a href="#">describe</a>)
+                </span>
+                <span>'listing keys'</span>
+            </p><div><div style="padding-left: 50px;"><p class="">
+                <span class="it">
+                    it -> 
+                </span>
+                <span>'#list should list all keys'</span>
+            </p></div><div style="padding-left: 50px;"><p class="">
+                <span class="it">
+                    it -> 
+                </span>
+                <span>'#ls should be an alias of #list'</span>
+            </p></div></div></div><div style=""><p class="stripe">
+                <span class="describe">
+                    (<a href="#">describe</a>)
+                </span>
+                <span>'#rm'</span>
+            </p><div><div style="padding-left: 50px;"><p class="">
+                <span class="it">
+                    it -> 
+                </span>
+                <span>'should be a no-op on a non-existing key'</span>
+            </p></div><div style="padding-left: 50px;"><p class="">
+                <span class="it">
+                    it -> 
+                </span>
+                <span>'should not remove an existing key if selecting `No`'</span>
+            </p></div><div style="padding-left: 50px;"><p class="">
+                <span class="it">
+                    it -> 
+                </span>
+                <span>'should remove an existing key if selecting `Yes`'</span>
+            </p></div></div></div>
+
+<script>
+'use strict';
+
+document.body.addEventListener('click', event => {
+    const target = event.target;
+
+    if (target.tagName.toUpperCase() === 'A') {
+        const style = target.parentNode.parentNode.nextElementSibling.style;
+
+        style.display = (style.display === 'none') ?
+            'block' :
+            'none';
+    }
+
+    event.preventDefault();
+});
+</script>
+</body>
+</html>
+    
