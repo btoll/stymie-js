@@ -56,9 +56,6 @@ const logInfo = logger.info;
 const logRaw = logger.raw;
 const logSuccess = logger.success;
 
-// TODO
-// key.stripped(!!argv.strip);
-
 if (command === 'init') {
     // TODO: Allow multiple installations in multiple locations?
     util.fileExists(`${stymieDir}/c`)
@@ -103,7 +100,7 @@ if (command === 'init') {
                             const entry = res.entry;
 
                             for (let n of Object.keys(entry)) {
-                                logRaw(`${n}: ${key.stripped(entry[n])}`);
+                                logRaw(`${n}: ${entry[n]}`);
                             }
                         } else {
                             // `res` will be a field value.
@@ -113,7 +110,7 @@ if (command === 'init') {
                             //      stymie get example.com -f password -s | pbcopy
                             //
                             // To view the logged output, get the whole entry (don't specify a `field`).
-                            process.stdout.write(key.stripped(res));
+                            process.stdout.write(res);
                         }
                     });
                     break;

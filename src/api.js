@@ -10,7 +10,6 @@ const jcrypt = require('jcrypt');
 // const logInfo = util.logInfo;
 const env = process.env;
 const keyFile = `${env.STYMIE || env.HOME}/.stymie.d/k`;
-const reWhitespace = /\s/g;
 
 const key = {
     add: R.curry((promise, key) => {
@@ -125,14 +124,7 @@ const key = {
             return list[key] ?
                 promise(list, key) :
                 'No matching key';
-        })),
-
-    // This method is expected to be called immediately with the value of `strip` that was passed
-    // on the CLI (see `bin/stymie`). The intent is then to redefine the method with the value of
-    // `strip` partially applied.  This will save us from having to always pass through the value
-    // of `strip` as a function parameter.
-    stripped: field =>
-        field.replace(reWhitespace, '')
+        }))
 };
 
 key.ls = key.list;

@@ -11,7 +11,6 @@ module.exports = {
     has: api.has,
     list: api.list,
     ls: api.list,
-    rm: api.rm(injector.rm),
-    stripped: api.stripped
+    rm: api.rm(injector.rm)
 };
 

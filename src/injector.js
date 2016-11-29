@@ -7,6 +7,8 @@ const env = process.env;
 const keyFile = `${env.STYMIE || env.HOME}/.stymie.d/k`;
 const log = logger.log;
 
+const reWhitespace = /\s/g;
+
 function getNewFields(entry, resolve) {
     inquirer.prompt(prompts.add.newFields, answers => {
         if (!answers.createNewField) {
@@ -28,7 +30,10 @@ function makePassphrase(generatePassword, entry, resolve) {
 
         inquirer.prompt(prompts.add.makePassphrase, answers => {
             if (answers.accept) {
-                entry.password = password;
+                // TODO: Be able to determine what type of password was selected and only strip
+                // whitespace for Diceware passwords.
+                // Note: The words in Diceware passwords are delimited by spaces.
+                entry.password = password.replace(reWhitespace, '');
                 resolve(entry);
             } else {
                 makePassphrase(generatePassword, entry, resolve);

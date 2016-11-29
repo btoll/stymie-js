@@ -83,7 +83,6 @@ stymie get example.com --field password | pbcopy
     Option | Description
     ------- | --------
     --field, -f | Gets the specified key value from an entry (only with `get` command).
-    --strip, -s | Strips any whitespace from a field (only with `get` command).
     -h, --help | Display help.
 
 ## License
