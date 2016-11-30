@@ -1,12 +1,8 @@
 const inquirer = require('inquirer');
 const logger = require('logger');
 const prompts = require('./prompts');
-const util = require('./util');
 
-const env = process.env;
-const keyFile = `${env.STYMIE || env.HOME}/.stymie.d/k`;
 const log = logger.log;
-
 const reWhitespace = /\s/g;
 
 function getNewFields(entry, resolve) {
@@ -42,7 +38,7 @@ function makePassphrase(generatePassword, entry, resolve) {
     }
 }
 
-const foo = {
+const injector = {
     add: (list, key) =>
         new Promise((resolve, reject) => {
             inquirer.prompt(prompts.add.newKey, answers =>
@@ -65,27 +61,43 @@ const foo = {
                     }
                 }
 
-                return util.encrypt(JSON.stringify(list, null, 4))
-                .then(util.writeFile(keyFile));
+                return list;
             });
         }),
 
+    edit: (prompts, list, key) =>
+        new Promise(resolve =>
+            inquirer.prompt(prompts, answers => {
+                const newKey = answers.key;
+
+                if (newKey !== key) {
+                    // Rename the key.
+                    delete list[key];
+                    list[newKey] = {};
+                }
+
+                for (let answer in answers) {
+                    if (answer !== 'key') {
+                        list[newKey][answer] = answers[answer];
+                    }
+                }
+
+                answers = getNewFields(list[newKey], resolve);
+            })
+        ),
+
     rm: (list, key) =>
-        new Promise((resolve, reject) =>
+        new Promise((resolve) =>
             inquirer.prompt(prompts.rm, answers => {
                 if (answers.rm) {
                     delete list[key];
-
-                    util.encrypt(JSON.stringify(list, null, 4))
-                    .then(util.writeFile(keyFile))
-                    .then(() => resolve(true))
-                    .catch(reject);
+                    resolve(true);
                 } else {
-                    reject(false);
+                    resolve(false);
                 }
             })
         )
 };
 
-module.exports = foo;
+module.exports = injector;
 

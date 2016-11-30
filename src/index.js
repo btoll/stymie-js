@@ -5,7 +5,7 @@ const injector = require('./injector');
 
 module.exports = {
     add: api.add(injector.add),
-    edit: api.edit,
+    edit: api.edit(injector.edit),
     generate: api.generate,
     get: api.get,
     has: api.has,

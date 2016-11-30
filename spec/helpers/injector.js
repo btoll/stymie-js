@@ -4,51 +4,76 @@ const prompts = require('../../src/prompts');
 
 const promptModule = inquirer.createPromptModule();
 
-const foo = {
-    add: (list, key) => {
-        const newKeyPromise = promptModule(prompts.add.newKey);
+const injector = {
+    add: (list, key) =>
+        new Promise(resolve => {
+            const newKeyPromise = promptModule(prompts.add.newKey);
 
-        // Url.
-        newKeyPromise.rl.emit('line', 'http://www.benjamintoll.com/');
-        // Username.
-        newKeyPromise.rl.emit('line', key);
-        // Select custom password.
-        newKeyPromise.rl.input.emit('keypress', '3');
-        newKeyPromise.rl.emit('line');
-        // Password.
-        newKeyPromise.rl.emit('line', 'foo');
+            // Url.
+            newKeyPromise.rl.emit('line', 'http://www.benjamintoll.com/');
+            // Username.
+            newKeyPromise.rl.emit('line', key);
+            // Select custom password.
+            newKeyPromise.rl.input.emit('keypress', '3');
+            newKeyPromise.rl.emit('line');
+            // Password.
+            newKeyPromise.rl.emit('line', 'foo');
 
-        const newFieldsPromise = promptModule(prompts.add.newFields);
+            const newFieldsPromise = promptModule(prompts.add.newFields);
 
-        // No new fields.
-        newFieldsPromise.rl.input.emit('keypress', '2');
-        newFieldsPromise.rl.emit('line');
+            // No new fields.
+            newFieldsPromise.rl.input.emit('keypress', '2');
+            newFieldsPromise.rl.emit('line');
 
-        // Remove this property so it's not include when we iterate over the answers object.
-        delete newKeyPromise.answers.generatePassword;
+            // Remove this property so it's not include when we iterate over the answers object.
+            delete newKeyPromise.answers.generatePassword;
 
-        return {
-            list,
-            key,
-            answers: newKeyPromise.answers
-        };
-    },
+            list[key] = newKeyPromise.answers;
+            resolve(list);
+        }),
 
-    rm: R.curry((selection, list, key) => {
-        const promise = promptModule(prompts.rm);
+    edit: (prompts, list, key) =>
+        new Promise(resolve => {
+            const editPromise = promptModule(prompts);
 
-        // Select `Yes` or `No` when prompted to remove.
-        promise.rl.input.emit('keypress', (selection).toString());
-        promise.rl.emit('line');
+            // Key.
+            editPromise.rl.emit('line');
+            // Url.
+            editPromise.rl.emit('line');
+            // Username.
+            editPromise.rl.emit('line');
+            // Password.
+            editPromise.rl.emit('line', 'goo');
 
-        return {
-            selection,
-            list,
-            key,
-            answers: promise.answers
-        };
-    })
+//             const newFieldsPromise = promptModule(prompts.add.newFields);
+
+//             // No new fields.
+//             newFieldsPromise.rl.input.emit('keypress', '2');
+//             newFieldsPromise.rl.emit('line');
+
+           resolve({
+               list,
+               key
+           });
+        }),
+
+    rm: R.curry((selection, list, key) =>
+        new Promise((resolve) => {
+            const promise = promptModule(prompts.rm);
+
+            // Select `Yes` or `No` when prompted to remove.
+            promise.rl.input.emit('keypress', (selection).toString());
+            promise.rl.emit('line');
+
+            if (promise.answers.rm) {
+                delete list[key];
+                resolve(true);
+            } else {
+                resolve(false);
+            }
+        }
+    ))
 };
 
-module.exports = foo;
+module.exports = injector;
 

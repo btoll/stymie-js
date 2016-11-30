@@ -5,6 +5,9 @@
 	 it -> 'should add a new key'
 	 it -> 'should not add a duplicate key'
  
+###(describe) '#edit'
+	 it -> 'should derp'
+ 
 ###(describe) '#generate'
 	 it -> 'should generate a passphrase'
  

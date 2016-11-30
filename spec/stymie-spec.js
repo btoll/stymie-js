@@ -6,8 +6,6 @@ const injector = require('./helpers/injector');
 const stymie = require('../src/api');
 const util = require('../src/util');
 
-const env = process.env;
-const keyFile = `${env.STYMIE || env.HOME}/.stymie.d/k`;
 const keyName = 'utley';
 
 describe('stymie', () => {
@@ -28,26 +26,13 @@ describe('stymie', () => {
 
         it('should add a new key', done =>
             stymie.add(injector.add, keyName)
-            .then(res => {
-                const entry = res.answers;
-                const key = res.key;
-                const list = res.list;
-                const item = list[key] = {};
-
-                for (let n of Object.keys(entry)) {
-                    item[n] = entry[n];
-                }
-
-                util.encrypt(JSON.stringify(list, null, 4))
-                .then(util.writeFile(keyFile))
-                .then(() =>
-                    stymie.has(key)
-                    .then(res => {
-                        expect(res).toBe(true);
-                        done();
-                    })
-                );
-            })
+            .then(() =>
+                stymie.has(keyName)
+                .then(res => {
+                    expect(res).toBe(true);
+                    done();
+                })
+            )
         );
 
         it('should not add a duplicate key', done =>
@@ -57,6 +42,18 @@ describe('stymie', () => {
                 done();
             })
         );
+    });
+
+    // TODO
+    describe('#edit', () => {
+        it('should derp', done => {
+            stymie.edit(injector.edit, keyName)
+            .then(() => {
+                // TODO
+                expect(true).toBe(true);
+                done();
+            });
+        });
     });
 
     describe('#generate', () => {
@@ -154,15 +151,15 @@ describe('stymie', () => {
         it('should be a no-op on a non-existing key', done =>
             stymie.rm(injector.rm, 'i do not exist')
             .then(data => {
-                expect(data).toBe('No matching key');
+                expect(data).toBe(false);
                 done();
             })
         );
 
         it('should not remove an existing key if selecting `No`', done =>
             stymie.rm(injector.rm(2), keyName)
-            .then(res =>
-                stymie.has(res.key)
+            .then(() =>
+                stymie.has(keyName)
                 .then(res => {
                     expect(res).toBe(true);
                     done();
@@ -172,21 +169,13 @@ describe('stymie', () => {
 
         it('should remove an existing key if selecting `Yes`', done =>
             stymie.rm(injector.rm(1), keyName)
-            .then(res => {
-                const list = res.list;
-
-                delete list[res.key];
-
-                util.encrypt(JSON.stringify(list, null, 4))
-                .then(util.writeFile(keyFile))
-                .then(() =>
-                    stymie.has(res.key)
-                    .then(res => {
-                        expect(res).toBe(false);
-                        done();
-                    })
-                );
-            })
+            .then(() =>
+                stymie.has(keyName)
+                .then(res => {
+                    expect(res).toBe(false);
+                    done();
+                })
+            )
         );
     });
 });

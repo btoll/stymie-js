@@ -2,12 +2,9 @@
 
 const R = require('ramda');
 const diceware = require('diceware');
-// const inquirer = require('inquirer');
 const jcrypt = require('jcrypt');
-// const util = require('./util');
+const util = require('./util');
 
-// const logError = util.logError;
-// const logInfo = util.logInfo;
 const env = process.env;
 const keyFile = `${env.STYMIE || env.HOME}/.stymie.d/k`;
 
@@ -23,59 +20,52 @@ const key = {
         .then(data => {
             list = JSON.parse(data);
 
-            return list[key] ?
-                false :
-                promise(list, key);
+            if (!list[key]) {
+                return promise(list, key)
+                .then(() =>
+                    util.encrypt(JSON.stringify(list, null, 4))
+                    .then(util.writeFile(keyFile))
+                );
+            } else {
+                return false;
+            }
         });
     }),
 
-//     edit: key =>
-//         jcrypt.decryptFile(keyFile)
-//         .then(data => {
-//             const list = JSON.parse(data);
-//             const entry = list[key];
-//             let prompts;
+    edit: R.curry((promise, key) =>
+        jcrypt.decryptFile(keyFile)
+        .then(data => {
+            const list = JSON.parse(data);
+            const entry = list[key];
+            let prompts;
 
-//             if (entry) {
-//                 prompts = [{
-//                     type: 'input',
-//                     name: 'key',
-//                     message: 'Edit key:',
-//                     default: key,
-//                     validate: util.noDuplicates.bind(null, key, list)
-//                 }];
+            if (entry) {
+                prompts = [{
+                    type: 'input',
+                    name: 'key',
+                    message: 'Edit key:',
+                    default: key,
+                    validate: util.noDuplicates.bind(null, key, list)
+                }];
 
-//                 for (let n of Object.keys(entry)) {
-//                     prompts.push({
-//                         type: 'input',
-//                         name: n,
-//                         message: `Edit ${n}:`,
-//                         default: entry[n]
-//                     });
-//                 }
+                for (let n of Object.keys(entry)) {
+                    prompts.push({
+                        type: 'input',
+                        name: n,
+                        message: `Edit ${n}:`,
+                        default: entry[n]
+                    });
+                }
 
-//                 inquirer.prompt(prompts, answers => {
-//                     const entry = answers.key;
-
-//                     if (entry !== key) {
-//                         // Rename the key.
-//                         delete list[key];
-//                         list[entry] = {};
-//                     }
-
-//                     for (let answer in answers) {
-//                         if (answer !== 'key') {
-//                             list[entry][answer] = answers[answer];
-//                         }
-//                     }
-
-//                     answers = getNewFields(entry);
-//                 });
-//             } else {
-//                 logInfo('No matching key');
-//             }
-//         })
-//         .catch(logError),
+                return promise(prompts, list, key)
+                .then(() =>
+                    util.encrypt(JSON.stringify(list, null, 4))
+                    .then(util.writeFile(keyFile))
+                );
+            } else {
+                return false;
+            }
+        })),
 
     generate: () => diceware.generate(),
 
@@ -121,9 +111,19 @@ const key = {
         .then(data => {
             const list = JSON.parse(data);
 
-            return list[key] ?
-                promise(list, key) :
-                'No matching key';
+            if (!list[key]) {
+                return false;
+            } else {
+                return promise(list, key)
+                .then(res => {
+                    if (res) {
+                        return util.encrypt(JSON.stringify(list, null, 4))
+                        .then(util.writeFile(keyFile));
+                    } else {
+                        return false;
+                    }
+                });
+            }
         }))
 };
 

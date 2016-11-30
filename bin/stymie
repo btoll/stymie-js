@@ -81,7 +81,17 @@ if (command === 'init') {
                     .catch(logError);
                     break;
 
-                case 'edit': key.edit(argv._[1]); break;
+                case 'edit':
+                    key.edit(argv._[1])
+                    .then(data => {
+                        if (typeof data !== 'string') {
+                            logInfo('Nothing to do here');
+                        } else {
+                            logSuccess('Key has been edited');
+                        }
+                    })
+                    .catch(logError);
+                    break;
 
                 case 'generate':
                     logger.raw(key.generate());
@@ -143,7 +153,7 @@ if (command === 'init') {
                 case 'rm':
                     key.rm(argv._[1])
                     .then(data => {
-                        if (typeof data === 'string') {
+                        if (typeof data !== 'string') {
                             logInfo('Nothing to do here');
                         } else {
                             logSuccess('Key has been removed');
