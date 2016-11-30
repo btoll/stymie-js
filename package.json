@@ -46,7 +46,8 @@
     "lint": "eslint spec src",
     "specs": "JASMINE_CONFIG_PATH=jasmine.json jasmine && npm run suites",
     "suites": "cd spec && dump_describes -t stymie-spec.js -v --html && dump_describes -t stymie-spec.js -v --md && cd ..",
-    "test": "npm run clean && npm run lint && STYMIE=spec GNUPGHOME=spec/.gnupg npm run specs"
+    "test": "npm run clean && npm run lint && STYMIE=spec GNUPGHOME=spec/.gnupg npm run specs",
+    "watch": "STYMIE=spec GNUPGHOME=spec/.gnupg bash ./scripts/watch.bash"
   }
 }
 
