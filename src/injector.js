@@ -5,10 +5,11 @@ const prompts = require('./prompts');
 const log = logger.log;
 const reWhitespace = /\s/g;
 
-function getNewFields(entry, resolve) {
+function getNewFields(entry) {
     inquirer.prompt(prompts.add.newFields, answers => {
         if (!answers.createNewField) {
-            resolve(entry);
+//             resolve(entry);
+            return entry;
         } else {
             entry[answers.name] = answers.value;
             getNewFields(entry);
@@ -51,7 +52,7 @@ const injector = {
             );
         }).then(entry => {
             return new Promise((resolve) => {
-                getNewFields(entry, resolve);
+                resolve(getNewFields(entry));
             }).then(entry => {
                 const item = list[entry.key] = {};
 
@@ -82,7 +83,9 @@ const injector = {
                     }
                 }
 
-                answers = getNewFields(list[newKey], resolve);
+                // TODO
+//                 answers = getNewFields(list[newKey]);
+                resolve(list);
             })
         ),
 
@@ -91,7 +94,7 @@ const injector = {
             inquirer.prompt(prompts.rm, answers => {
                 if (answers.rm) {
                     delete list[key];
-                    resolve(true);
+                    resolve(list);
                 } else {
                     resolve(false);
                 }

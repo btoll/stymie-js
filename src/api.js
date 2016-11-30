@@ -22,10 +22,7 @@ const key = {
 
             if (!list[key]) {
                 return promise(list, key)
-                .then(() =>
-                    util.encrypt(JSON.stringify(list, null, 4))
-                    .then(util.writeFile(keyFile))
-                );
+                .then(util.encryptAndWrite);
             } else {
                 return false;
             }
@@ -58,10 +55,7 @@ const key = {
                 }
 
                 return promise(prompts, list, key)
-                .then(() =>
-                    util.encrypt(JSON.stringify(list, null, 4))
-                    .then(util.writeFile(keyFile))
-                );
+                .then(util.encryptAndWrite);
             } else {
                 return false;
             }
@@ -100,7 +94,7 @@ const key = {
 
     has: key =>
         jcrypt.decryptFile(keyFile)
-        .then(data => !!JSON.parse(data)[key]),
+        .then(keys => !!JSON.parse(keys)[key]),
 
     list: () =>
         jcrypt.decryptFile(keyFile)
@@ -115,10 +109,9 @@ const key = {
                 return false;
             } else {
                 return promise(list, key)
-                .then(res => {
-                    if (res) {
-                        return util.encrypt(JSON.stringify(list, null, 4))
-                        .then(util.writeFile(keyFile));
+                .then(list => {
+                    if (list) {
+                        return util.encryptAndWrite(list);
                     } else {
                         return false;
                     }

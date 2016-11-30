@@ -32,7 +32,8 @@ const injector = {
             resolve(list);
         }),
 
-    edit: (prompts, list, key) =>
+//     edit: (prompts, list, key) =>
+    edit: (prompts, list) =>
         new Promise(resolve => {
             const editPromise = promptModule(prompts);
 
@@ -51,10 +52,7 @@ const injector = {
 //             newFieldsPromise.rl.input.emit('keypress', '2');
 //             newFieldsPromise.rl.emit('line');
 
-           resolve({
-               list,
-               key
-           });
+           resolve(list);
         }),
 
     rm: R.curry((selection, list, key) =>
@@ -67,7 +65,7 @@ const injector = {
 
             if (promise.answers.rm) {
                 delete list[key];
-                resolve(true);
+                resolve(list);
             } else {
                 resolve(false);
             }
