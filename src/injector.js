@@ -5,19 +5,17 @@ const prompts = require('./prompts');
 const log = logger.log;
 const reWhitespace = /\s/g;
 
-function getNewFields(entry) {
+const getNewFields = (list, entry, resolve) =>
     inquirer.prompt(prompts.add.newFields, answers => {
         if (!answers.createNewField) {
-//             resolve(entry);
-            return entry;
+            resolve(list);
         } else {
             entry[answers.name] = answers.value;
-            getNewFields(entry);
+            return getNewFields(list, entry, resolve);
         }
     });
-}
 
-function makePassphrase(generatePassword, entry, resolve) {
+const makePassphrase = (generatePassword, entry, resolve) => {
     if (entry.password !== undefined) {
         resolve(entry);
     } else {
@@ -37,11 +35,11 @@ function makePassphrase(generatePassword, entry, resolve) {
             }
         });
     }
-}
+};
 
 const injector = {
     add: (list, key) =>
-        new Promise((resolve, reject) => {
+        new Promise((resolve, reject) =>
             inquirer.prompt(prompts.add.newKey, answers =>
                 makePassphrase(answers.generatePassword, {
                     key: key,
@@ -49,12 +47,12 @@ const injector = {
                     username: answers.username,
                     password: answers.password
                 }, resolve, reject)
-            );
-        }).then(entry => {
-            return new Promise((resolve) => {
-                resolve(getNewFields(entry));
-            }).then(entry => {
-                const item = list[entry.key] = {};
+            )
+        ).then(entry =>
+            new Promise(resolve =>
+                getNewFields(list, entry, resolve)
+            ).then(() => {
+                const item = list[key] = {};
 
                 for (let n of Object.keys(entry)) {
                     if (n !== 'key') {
@@ -63,8 +61,8 @@ const injector = {
                 }
 
                 return list;
-            });
-        }),
+            })
+        ),
 
     edit: (prompts, list, key) =>
         new Promise(resolve =>
@@ -83,9 +81,7 @@ const injector = {
                     }
                 }
 
-                // TODO
-//                 answers = getNewFields(list[newKey]);
-                resolve(list);
+                getNewFields(list, list[newKey], resolve);
             })
         ),
 

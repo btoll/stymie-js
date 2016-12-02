@@ -5,9 +5,6 @@ const diceware = require('diceware');
 const jcrypt = require('jcrypt');
 const util = require('./util');
 
-const env = process.env;
-const keyFile = `${env.STYMIE || env.HOME}/.stymie.d/k`;
-
 const key = {
     add: R.curry((promise, key) => {
         if (!key) {
@@ -16,7 +13,7 @@ const key = {
 
         let list = null;
 
-        return jcrypt.decryptFile(keyFile)
+        return jcrypt.decryptFile(util.getKeyFile())
         .then(data => {
             list = JSON.parse(data);
 
@@ -30,7 +27,7 @@ const key = {
     }),
 
     edit: R.curry((promise, key) =>
-        jcrypt.decryptFile(keyFile)
+        jcrypt.decryptFile(util.getKeyFile())
         .then(data => {
             const list = JSON.parse(data);
             const entry = list[key];
@@ -68,7 +65,7 @@ const key = {
             return Promise.reject('Nothing to do here');
         }
 
-        return jcrypt.decryptFile(keyFile)
+        return jcrypt.decryptFile(util.getKeyFile())
         .then(data => {
             const list = JSON.parse(data);
             const entry = list[key];
@@ -93,15 +90,15 @@ const key = {
     },
 
     has: key =>
-        jcrypt.decryptFile(keyFile)
+        jcrypt.decryptFile(util.getKeyFile())
         .then(keys => !!JSON.parse(keys)[key]),
 
     list: () =>
-        jcrypt.decryptFile(keyFile)
+        jcrypt.decryptFile(util.getKeyFile())
         .then(keys => Object.keys(JSON.parse(keys)).sort()),
 
     rm: R.curry((promise, key) =>
-        jcrypt.decryptFile(keyFile)
+        jcrypt.decryptFile(util.getKeyFile())
         .then(data => {
             const list = JSON.parse(data);
 

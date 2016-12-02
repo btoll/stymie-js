@@ -30,6 +30,8 @@ const fileExists = path =>
         })
     );
 
+const getKeyFile = () => keyFile;
+
 const noBlanks = input => {
     let res = true;
 
@@ -102,6 +104,7 @@ const util = {
     logWarn: logWarn,
 
     fileExists,
+    getKeyFile,
     noBlanks,
     noDuplicates,
     setGPGOptions,

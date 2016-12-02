@@ -44,8 +44,8 @@
     "coverage": "STYMIE=spec GNUPGHOME=spec/.gnupg JASMINE_CONFIG_PATH=jasmine.json istanbul cover jasmine --captureExceptions",
     "coveralls": "npm run coverage && cat ./coverage/lcov.info | ./node_modules/coveralls/bin/coveralls.js && rm -rf ./coverage",
     "lint": "eslint spec src",
-    "specs": "JASMINE_CONFIG_PATH=jasmine.json jasmine && npm run suites",
-    "suites": "cd spec && dump_describes -t stymie-spec.js -v --html && dump_describes -t stymie-spec.js -v --md && cd ..",
+    "specs": "STYMIE=spec GNUPGHOME=spec/.gnupg JASMINE_CONFIG_PATH=jasmine.json jasmine && npm run suites",
+    "suites": "dump_describes -t spec/stymie-spec.js -d spec -v --html && dump_describes -t spec/stymie-spec.js -d spec -v --md",
     "test": "npm run clean && npm run lint && STYMIE=spec GNUPGHOME=spec/.gnupg npm run specs",
     "watch": "STYMIE=spec GNUPGHOME=spec/.gnupg bash ./scripts/watch.bash"
   }
