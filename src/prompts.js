@@ -6,7 +6,7 @@ const util = require('./util');
 
 const logError = util.logError;
 
-const prompts = {
+module.exports = {
     add: {
         makePassphrase: [{
             type: 'list',
@@ -148,6 +148,4 @@ const prompts = {
         default: false
     }]
 };
-
-module.exports = prompts;
 

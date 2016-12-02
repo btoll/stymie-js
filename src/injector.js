@@ -37,66 +37,68 @@ const makePassphrase = (generatePassword, entry, resolve) => {
     }
 };
 
-const injector = {
-    add: (list, key) =>
-        new Promise((resolve, reject) =>
-            inquirer.prompt(prompts.add.newKey, answers =>
-                makePassphrase(answers.generatePassword, {
-                    key: key,
-                    url: answers.url,
-                    username: answers.username,
-                    password: answers.password
-                }, resolve, reject)
-            )
-        ).then(entry =>
-            new Promise(resolve =>
-                getNewFields(list, entry, resolve)
-            ).then(() => {
-                const item = list[key] = {};
-
-                for (let n of Object.keys(entry)) {
-                    if (n !== 'key') {
-                        item[n] = entry[n];
-                    }
-                }
-
-                return list;
-            })
-        ),
-
-    edit: (prompts, list, key) =>
-        new Promise(resolve =>
-            inquirer.prompt(prompts, answers => {
-                const newKey = answers.key;
-
-                if (newKey !== key) {
-                    // Rename the key.
-                    delete list[key];
-                    list[newKey] = {};
-                }
-
-                for (let answer in answers) {
-                    if (answer !== 'key') {
-                        list[newKey][answer] = answers[answer];
-                    }
-                }
-
-                getNewFields(list, list[newKey], resolve);
-            })
-        ),
-
-    rm: (list, key) =>
-        new Promise((resolve) =>
-            inquirer.prompt(prompts.rm, answers => {
-                if (answers.rm) {
-                    delete list[key];
-                    resolve(list);
-                } else {
-                    resolve(false);
-                }
-            })
+const add = (list, key) =>
+    new Promise((resolve, reject) =>
+        inquirer.prompt(prompts.add.newKey, answers =>
+            makePassphrase(answers.generatePassword, {
+                key: key,
+                url: answers.url,
+                username: answers.username,
+                password: answers.password
+            }, resolve, reject)
         )
-};
+    ).then(entry =>
+        new Promise(resolve =>
+            getNewFields(list, entry, resolve)
+        ).then(() => {
+            const item = list[key] = {};
 
-module.exports = injector;
+            for (let n of Object.keys(entry)) {
+                if (n !== 'key') {
+                    item[n] = entry[n];
+                }
+            }
+
+            return list;
+        })
+    );
+
+const edit = (prompts, list, key) =>
+    new Promise(resolve =>
+        inquirer.prompt(prompts, answers => {
+            const newKey = answers.key;
+
+            if (newKey !== key) {
+                // Rename the key.
+                delete list[key];
+                list[newKey] = {};
+            }
+
+            for (let answer in answers) {
+                if (answer !== 'key') {
+                    list[newKey][answer] = answers[answer];
+                }
+            }
+
+            getNewFields(list, list[newKey], resolve);
+        })
+    );
+
+const rm = (list, key) =>
+    new Promise((resolve) =>
+        inquirer.prompt(prompts.rm, answers => {
+            if (answers.rm) {
+                delete list[key];
+                resolve(list);
+            } else {
+                resolve(false);
+            }
+        })
+    );
+
+module.exports = {
+    add,
+    edit,
+    rm
+};
 
