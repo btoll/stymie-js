@@ -18,7 +18,7 @@ const add = R.curry((promise, key) => {
 
         if (!list[key]) {
             return promise(list, key)
-            .then(util.encryptAndWrite);
+            .then(util.encryptDataToFile);
         } else {
             return false;
         }
@@ -51,7 +51,7 @@ const edit = R.curry((promise, key) =>
             }
 
             return promise(prompts, list, key)
-            .then(util.encryptAndWrite);
+            .then(util.encryptDataToFile);
         } else {
             return false;
         }
@@ -105,13 +105,11 @@ const rm = R.curry((promise, key) =>
             return false;
         } else {
             return promise(list, key)
-            .then(list => {
-                if (list) {
-                    return util.encryptAndWrite(list);
-                } else {
-                    return false;
-                }
-            });
+            .then(list =>
+                list ?
+                    util.encryptDataToFile(list) :
+                    false
+            );
         }
     }));
 

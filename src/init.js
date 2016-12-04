@@ -1,5 +1,6 @@
 'use strict';
 
+const R = require('ramda');
 const cp = require('child_process');
 const fs = require('fs');
 const prompts = require('./prompts');
@@ -8,6 +9,25 @@ const util = require('./util');
 
 const logError = util.logError;
 const logSuccess = util.logSuccess;
+
+const writeOptions = {
+    defaultEncoding: 'utf8',
+    encoding: 'utf8',
+    fd: null,
+    flags: 'w',
+    mode: 0o0600
+};
+
+const writeFile = R.curry((dest, enciphered) =>
+    new Promise((resolve, reject) =>
+        fs.writeFile(dest, enciphered, writeOptions, err => {
+            if (err) {
+                reject(err);
+            } else {
+                resolve(dest);
+            }
+        })
+    ));
 
 module.exports = () =>
     inquirer.prompt(prompts.init, answers => {
@@ -47,7 +67,7 @@ module.exports = () =>
 
             // Create config file.
             return util.encrypt(JSON.stringify(gpgOptions, null, 4))
-            .then(util.writeFile(`${stymieDir}/c`))
+            .then(writeFile(`${stymieDir}/c`))
             .catch(logError);
         })
         .then(file => {
@@ -56,7 +76,7 @@ module.exports = () =>
             // Create entry list file.
             // TODO: DRY!
             return util.encrypt(JSON.stringify({}, null, 4))
-            .then(util.writeFile(`${stymieDir}/k`))
+            .then(writeFile(`${stymieDir}/k`))
             .catch(logError);
         })
         .then(file => {

@@ -11,14 +11,6 @@ const keyFile = `${env.STYMIE || env.HOME}/.stymie.d/k`;
 const logError = logger.error;
 const logWarn = logger.warn;
 
-const defaultWriteOptions = {
-    defaultEncoding: 'utf8',
-    encoding: 'utf8',
-    fd: null,
-    flags: 'w',
-    mode: 0o0600
-};
-
 const fileExists = path =>
     new Promise((resolve, reject) =>
         fs.stat(path, err => {
@@ -67,10 +59,10 @@ const setGPGOptions = options => {
         gpgOptions.push('--sign');
     }
 
-    const encrypt = util.encrypt = jcrypt.encrypt(gpgOptions);
+    util.encrypt = jcrypt.encrypt(gpgOptions);
 
-    util.encryptAndWrite = R.compose(
-        R.composeP(writeKeyFile, encrypt),
+    util.encryptDataToFile = R.compose(
+        jcrypt.encryptDataToFile(gpgOptions, keyFile),
         stringify
     );
 };
@@ -78,23 +70,10 @@ const setGPGOptions = options => {
 const stringify = list =>
     JSON.stringify(list, null, 4);
 
-const writeFile = R.curry((dest, enciphered) =>
-    new Promise((resolve, reject) =>
-        fs.writeFile(dest, enciphered, defaultWriteOptions, err => {
-            if (err) {
-                reject(err);
-            } else {
-                resolve(dest);
-            }
-        })
-    ));
-
-const writeKeyFile = writeFile(keyFile);
-
 const util = {
     // Will be defined in #setGPGOptions.
     encrypt: null,
-    encryptAndWrite: null,
+    encryptDataToFile: null,
 
     log: logger.log,
     logError: logError,
@@ -107,8 +86,7 @@ const util = {
     getKeyFile,
     noBlanks,
     noDuplicates,
-    setGPGOptions,
-    writeFile
+    setGPGOptions
 };
 
 module.exports = util;
