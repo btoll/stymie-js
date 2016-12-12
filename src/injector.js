@@ -85,7 +85,7 @@ const edit = (prompts, list, key) =>
     );
 
 const rm = (list, key) =>
-    new Promise((resolve) =>
+    new Promise(resolve =>
         inquirer.prompt(prompts.rm, answers => {
             if (answers.rm) {
                 delete list[key];

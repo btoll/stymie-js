@@ -71,25 +71,15 @@ if (command === 'init') {
             switch (command) {
                 case 'add':
                     key.add(argv._[1])
-                    .then(data => {
-                        if (typeof data !== 'string') {
-                            logInfo('Nothing to do here');
-                        } else {
-                            logSuccess('Key has been added');
-                        }
-                    })
+                    .then(() => 'Key has been added')
+                    .then(logSuccess)
                     .catch(logError);
                     break;
 
                 case 'edit':
                     key.edit(argv._[1])
-                    .then(data => {
-                        if (typeof data !== 'string') {
-                            logInfo('Nothing to do here');
-                        } else {
-                            logSuccess('Key has been edited');
-                        }
-                    })
+                    .then(() => 'Key has been edited')
+                    .then(logSuccess)
                     .catch(logError);
                     break;
 
@@ -100,10 +90,7 @@ if (command === 'init') {
                 case 'get':
                     key.get(argv._[1], argv.field)
                     .then(res => {
-                        if (typeof res === 'boolean') {
-                            // Either no key or no field value within a known key.
-                            logInfo('Nothing to do here');
-                        } else if (typeof res === 'object') {
+                        if (typeof res === 'object') {
                             // Dump the whole object.
                             logInfo(`Results for key \`${res.key}\``);
 
@@ -122,18 +109,18 @@ if (command === 'init') {
                             // To view the logged output, get the whole entry (don't specify a `field`).
                             process.stdout.write(res);
                         }
-                    });
+                    })
+                    .catch(logError)
                     break;
 
                 case 'has':
                     key.has(argv._[1])
                     .then(res =>
-                        logInfo(
-                            res ?
-                                'Key exists' :
-                                'No matching key'
-                        )
+                        res ?
+                            'Key exists' :
+                            'No matching key'
                     )
+                    .then(logInfo)
                     .catch(logError);
                     break;
 
@@ -141,25 +128,23 @@ if (command === 'init') {
                 case 'ls':
                     key.list()
                     .then(keys =>
-                        logInfo(
-                            !keys.length ?
-                                'No installed keys' :
-                                `Installed keys: \n${keys.join('\n')}`
-                        )
+                        !keys.length ?
+                            'No installed keys' :
+                            `Installed keys: \n${keys.join('\n')}`
                     )
+                    .then(logInfo)
                     .catch(logError);
                     break;
 
                 case 'rm':
                     key.rm(argv._[1])
-                    .then(data => {
-                        if (typeof data !== 'string') {
-                            logInfo('Nothing to do here');
-                        } else {
-                            logSuccess('Key has been removed');
-                        }
-                    })
-                    .catch(() => logError('No removal'));
+                    .then(res =>
+                        res ?
+                            'Key has been removed' :
+                            'No removal'
+                    )
+                    .then(logInfo)
+                    .catch(logError);
                     break;
 
                 default: util.logError('Bad command');

@@ -4,23 +4,6 @@ const prompts = require('../../src/prompts');
 
 const promptModule = inquirer.createPromptModule();
 
-const rm = R.curry((selection, list, key) =>
-    new Promise((resolve) => {
-        const promise = promptModule(prompts.rm);
-
-        // Select `Yes` or `No` when prompted to remove.
-        promise.rl.input.emit('keypress', (selection).toString());
-        promise.rl.emit('line');
-
-        if (promise.answers.rm) {
-            delete list[key];
-            resolve(list);
-        } else {
-            resolve(false);
-        }
-    }
-));
-
 const add = (list, key) =>
     new Promise(resolve => {
         const newKeyPromise = promptModule(prompts.add.newKey);
@@ -69,6 +52,23 @@ const edit = (prompts, list) =>
 
        resolve(list);
     });
+
+const rm = R.curry((selection, list, key) =>
+    new Promise((resolve) => {
+        const promise = promptModule(prompts.rm);
+
+        // Select `Yes` or `No` when prompted to remove.
+        promise.rl.input.emit('keypress', (selection).toString());
+        promise.rl.emit('line');
+
+        if (promise.answers.rm) {
+            delete list[key];
+            resolve(list);
+        } else {
+            resolve(false);
+        }
+    }
+));
 
 module.exports = {
     add,

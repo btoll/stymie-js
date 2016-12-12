@@ -7,7 +7,7 @@ const util = require('./util');
 
 const add = R.curry((promise, key) => {
     if (!key) {
-        return Promise.reject('Nothing to do here');
+        return Promise.reject('Nothing to do here!');
     }
 
     let list = null;
@@ -20,7 +20,7 @@ const add = R.curry((promise, key) => {
             return promise(list, key)
             .then(util.encryptDataToFile);
         } else {
-            return false;
+            return Promise.reject('Nothing to do here!');
         }
     });
 });
@@ -53,15 +53,16 @@ const edit = R.curry((promise, key) =>
             return promise(prompts, list, key)
             .then(util.encryptDataToFile);
         } else {
-            return false;
+            return Promise.reject('Nothing to do here!');
         }
     }));
 
-const generate = () => diceware.generate();
+const generate = () =>
+    diceware.generate();
 
 const get = (key, field) => {
     if (!key) {
-        return Promise.reject('Nothing to do here');
+        return Promise.reject('Nothing to do here!');
     }
 
     return jcrypt.decryptFile(util.getKeyFile())
@@ -84,7 +85,7 @@ const get = (key, field) => {
             }
         }
 
-        return false;
+        return Promise.reject('Nothing to do here!');
     });
 };
 
@@ -102,7 +103,7 @@ const rm = R.curry((promise, key) =>
         const list = JSON.parse(data);
 
         if (!list[key]) {
-            return false;
+            return Promise.reject('Nothing to do here!');
         } else {
             return promise(list, key)
             .then(list =>

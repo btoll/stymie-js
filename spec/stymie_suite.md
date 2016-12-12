@@ -5,9 +5,6 @@
 	 it -> 'should add a new key'
 	 it -> 'should not add a duplicate key'
 
-###(describe) '#edit'
-	 it -> 'should derp'
-
 ###(describe) '#generate'
 	 it -> 'should generate a passphrase'
 
@@ -15,11 +12,11 @@
 	 it -> 'should reject when no key name is given'
 
 	(describe) 'getting a key'
-		 it -> 'should be a no-op when a non-existing key is given'
+		 it -> 'should reject when a non-existing key is given'
 		 it -> 'should return the key values for an existing key'
 
 	(describe) 'getting a field'
-		 it -> 'should be a no-op when the field does not exist'
+		 it -> 'should reject when the field does not exist'
 		 it -> 'should return the field value for an existing field'
 
 ###(describe) '#has'
@@ -31,6 +28,6 @@
 	 it -> '#ls should be an alias of #list'
 
 ###(describe) '#rm'
-	 it -> 'should be a no-op on a non-existing key'
+	 it -> 'should reject a non-existing key'
 	 it -> 'should not remove an existing key if selecting `No`'
 	 it -> 'should remove an existing key if selecting `Yes`'

@@ -6,6 +6,7 @@ const injector = require('./helpers/injector');
 const stymie = require('../src/api');
 const util = require('../src/util');
 
+const errorMessage = 'Nothing to do here!';
 const keyName = 'utley';
 
 describe('stymie', () => {
@@ -19,7 +20,7 @@ describe('stymie', () => {
         it('should reject when no key name is given', done =>
             stymie.add(injector.add, '')
             .catch(err => {
-                expect(err).toBe('Nothing to do here');
+                expect(err).toBe(errorMessage);
                 done();
             })
         );
@@ -37,14 +38,15 @@ describe('stymie', () => {
 
         it('should not add a duplicate key', done =>
             stymie.add(injector.add, keyName)
-            .then(res => {
-                expect(res).toBe(false);
+            .catch(err => {
+                expect(err).toBe(errorMessage);
                 done();
             })
         );
     });
 
     // TODO
+    /*
     describe('#edit', () => {
         it('should derp', done => {
             stymie.edit(injector.edit, keyName)
@@ -55,6 +57,7 @@ describe('stymie', () => {
             });
         });
     });
+    */
 
     describe('#generate', () => {
         it('should generate a passphrase', () =>
@@ -66,15 +69,15 @@ describe('stymie', () => {
         it('should reject when no key name is given', () =>
             stymie.get()
             .catch(err => {
-                expect(err).toBe('Nothing to do here');
+                expect(err).toBe(errorMessage);
             })
         );
 
         describe('getting a key', () => {
-            it('should be a no-op when a non-existing key is given', done =>
+            it('should reject when a non-existing key is given', done =>
                 stymie.get('derp')
-                .then(res => {
-                    expect(res).toBe(false);
+                .catch(err => {
+                    expect(err).toBe(errorMessage);
                     done();
                 })
             );
@@ -89,14 +92,15 @@ describe('stymie', () => {
                     });
                     done();
                 })
+                .catch(err => console.log(err))
             );
         });
 
         describe('getting a field', () => {
-            it('should be a no-op when the field does not exist', done =>
+            it('should reject when the field does not exist', done =>
                 stymie.get('utley', 'bar')
-                .then(res => {
-                    expect(res).toBe(false);
+                .catch(err => {
+                    expect(err).toBe(errorMessage);
                     done();
                 })
             );
@@ -148,10 +152,10 @@ describe('stymie', () => {
     });
 
     describe('#rm', () => {
-        it('should be a no-op on a non-existing key', done =>
+        it('should reject a non-existing key', done =>
             stymie.rm(injector.rm, 'i do not exist')
-            .then(data => {
-                expect(data).toBe(false);
+            .catch(err => {
+                expect(err).toBe(errorMessage);
                 done();
             })
         );
