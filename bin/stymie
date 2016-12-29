@@ -10,13 +10,6 @@ const util = require('../src/util');
 
 const argv = require('yargs')
     .usage('Usage: stymie <command> [options]')
-    .example('stymie init', 'Installs')
-    .command('init', 'Install the password file directory and config file')
-
-    .example('stymie generate', 'Generates a diceware passphrase')
-    .command('generate', 'Generate a passphrase')
-
-    .command('', '')
 
     .example('stymie add', 'Adds a new entry')
     .command('add', 'Add a new entry')
@@ -24,11 +17,17 @@ const argv = require('yargs')
     .example('stymie edit', 'Edits an entry')
     .command('edit', 'Edit an entry')
 
+    .example('stymie generate', 'Generates a diceware passphrase')
+    .command('generate', 'Generate a passphrase')
+
     .example('stymie get', 'Retrieves an entry')
     .command('get', 'Get an entry')
 
     .example('stymie has', 'Checks if the entry exists')
     .command('has', 'Check if the entry exists')
+
+    .example('stymie init', 'Installs the password file directory and config file')
+    .command('init', 'Install the password file directory and config file')
 
     .example('stymie list', 'Lists all entries')
     .command('list', 'List all entries')
@@ -39,9 +38,6 @@ const argv = require('yargs')
 
     .alias('f', 'field')
     .describe('field', 'Gets the specified key value from an entry (only with `get` command)')
-
-    .alias('s', 'strip')
-    .describe('strip', 'Strips any whitespace from a field (only with `get` command)')
 
     .help('h')
     .alias('h', 'help')

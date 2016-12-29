@@ -68,17 +68,14 @@ stymie get example.com --field password | pbcopy
     ------- | --------
     add | Adds a new entry
     edit | Edits an entry
+    generate | Generates a diceware passphrase
     get | Retrieves an entry
     has | Checks if the entry exists
+    init | Installs the password file directory and config file
     list | List all entries
     rm | Deletes an entry
 
-### Other commands and options
-
-    Command | Description
-    ------- | --------
-    generate | Generates a diceware passphrase
-    init | Installs the password file directory and config file
+### Options
 
     Option | Description
     ------- | --------
