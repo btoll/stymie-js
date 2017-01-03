@@ -79,8 +79,9 @@ stymie get example.com --field password | pbcopy
 
     Option | Description
     ------- | --------
-    --field, -f | Gets the specified key value from an entry (only with `get` command).
-    -h, --help | Display help.
+    --field, -f | Gets the specified key value from an entry (only with `get` command)
+    --shadow | Obfuscates a password entry
+    -h, --help | Display help
 
 ## License
 

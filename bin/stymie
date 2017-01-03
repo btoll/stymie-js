@@ -39,6 +39,9 @@ const argv = require('yargs')
     .alias('f', 'field')
     .describe('field', 'Gets the specified key value from an entry (only with `get` command)')
 
+    .describe('shadow', 'Obfuscates a password entry')
+    .boolean('shadow')
+
     .help('h')
     .alias('h', 'help')
     .argv;
@@ -91,8 +94,14 @@ if (command === 'init') {
                             logInfo(`Results for key \`${res.key}\``);
 
                             const entry = res.entry;
+                            const shadow = argv.shadow;
 
                             for (let n of Object.keys(entry)) {
+                                // There could be custom fields that contain a password so check the entire key for `password`!
+                                if (shadow && ~n.indexOf('password')) {
+                                    entry[n] = '************';
+                                }
+
                                 logRaw(`${n}: ${entry[n]}`);
                             }
                         } else {
