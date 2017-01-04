@@ -83,7 +83,11 @@ module.exports = () =>
             logSuccess(`Created encrypted entries list file ${file}`);
 
             if (answers.histignore) {
-                const histignoreFile = `${home}/${answers.histignoreFile}`;
+                let histignoreFile = answers.histignoreFile;
+
+                if (histignoreFile[0] === '~') {
+                    histignoreFile = `${home}/${histignoreFile.slice(2)}`;
+                }
 
                 return new Promise((resolve, reject) =>
                     fs.appendFile(histignoreFile, 'export HISTIGNORE="stymie *:$HISTIGNORE"\n', 'utf8', (err) => {

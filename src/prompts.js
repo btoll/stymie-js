@@ -133,7 +133,7 @@ module.exports = {
         type: 'input',
         name: 'histignoreFile',
         message: 'We need to write the new $HISTIGNORE value.\nName of shell startup file to which it should be written:',
-        default: '.bashrc',
+        default: '~/.bashrc',
         when: answers => answers.histignore
     }],
 

@@ -30,7 +30,7 @@ securityAnswer: '1st Avenue'
 
 [1] As an alternative to setting `$HISTIGNORE`, most shells by default allow for any command preceded by a `[[SPACE]]` to be ignored by history. Check the value of `$HISTCONTROL` for support.
 
-Only Linux and OS X are supported at this time. There are no plans to support Windows.
+Only Linux and OS X are supported. There are no plans to support Windows.
 
 ## Installation
 
