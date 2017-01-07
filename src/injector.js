@@ -1,5 +1,5 @@
 const inquirer = require('inquirer');
-const logger = require('logger');
+const logger = require('onf-logger');
 const prompts = require('./prompts');
 
 const log = logger.log;

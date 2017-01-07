@@ -2,8 +2,8 @@
 
 const R = require('ramda');
 const fs = require('fs');
-const jcrypt = require('jcrypt');
-const logger = require('logger');
+const jcrypt = require('onf-gpg-wrapper');
+const logger = require('onf-logger');
 
 const env = process.env;
 const keyFile = `${env.STYMIE || env.HOME}/.stymie.d/k`;

@@ -2,9 +2,9 @@
 
 const inquirer = require('inquirer');
 const init = require('../src/init');
-const jcrypt = require('jcrypt');
+const jcrypt = require('onf-gpg-wrapper');
 const key = require('../src/');
-const logger = require('logger');
+const logger = require('onf-logger');
 const prompts = require('../src/prompts');
 const util = require('../src/util');
 

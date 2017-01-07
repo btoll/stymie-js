@@ -1,6 +1,6 @@
 {
   "name": "stymie",
-  "version": "0.4.0",
+  "version": "0.1.0",
   "description": "Cryptographically secure password manager",
   "bin": {
     "stymie": "./bin/stymie"
@@ -24,10 +24,10 @@
   "dependencies": {
     "diceware": "git+https://github.com/btoll/diceware.git",
     "inquirer": "^0.11.0",
-    "jcrypt": "git+https://github.com/btoll/jcrypt.git",
-    "logger": "git+https://github.com/btoll/logger.git",
+    "onf-gpg-wrapper": "^0.1.0",
+    "onf-logger": "^0.1.0",
     "ramda": "^0.22.1",
-    "sillypass": "git+https://github.com/btoll/sillypass.git",
+    "sillypass": "^0.1.0",
     "which": "^1.2.4",
     "yargs": "^3.31.0"
   },

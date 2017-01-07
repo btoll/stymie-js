@@ -2,7 +2,7 @@
 
 const R = require('ramda');
 const diceware = require('diceware');
-const jcrypt = require('jcrypt');
+const jcrypt = require('onf-gpg-wrapper');
 const util = require('./util');
 
 const add = R.curry((promise, key) => {
