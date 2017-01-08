@@ -1,7 +1,7 @@
 'use strict';
 
 const R = require('ramda');
-const diceware = require('diceware');
+const diceware = require('onf-diceware');
 const jcrypt = require('onf-gpg-wrapper');
 const util = require('./util');
 

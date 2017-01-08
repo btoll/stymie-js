@@ -1,6 +1,6 @@
 'use strict';
 
-const diceware = require('diceware');
+const diceware = require('onf-diceware');
 const sillypass = require('sillypass');
 const util = require('./util');
 

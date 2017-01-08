@@ -1,6 +1,6 @@
 {
   "name": "stymie",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Cryptographically secure password manager",
   "bin": {
     "stymie": "./bin/stymie"
@@ -13,6 +13,7 @@
     "password",
     "passphrase",
     "diceware",
+    "encryption",
     "cryptography"
   ],
   "author": "Benjamin Toll",
@@ -22,8 +23,8 @@
     "url": "https://github.com/btoll/stymie"
   },
   "dependencies": {
-    "diceware": "git+https://github.com/btoll/diceware.git",
     "inquirer": "^0.11.0",
+    "onf-diceware": "^0.1.0",
     "onf-gpg-wrapper": "^0.1.0",
     "onf-logger": "^0.1.0",
     "ramda": "^0.22.1",
@@ -33,7 +34,7 @@
   },
   "devDependencies": {
     "coveralls": "^2.11.15",
-    "dump_describes": "git+https://github.com/btoll/dump_describes.git",
+    "dump_describes": "^0.1.0",
     "eslint": "^2.2.0",
     "istanbul": "^0.4.5"
   },
