@@ -24,8 +24,7 @@ securityAnswer: '1st Avenue'
 - Uses GPG/PGP public-key cryptography to encrypt everything (even configs).
 - Uses OS-level permissions-based access control so only the user can view and list any files created by the user.
 - Encrypts using the `--hidden-recipient` flag so as to not include the recipient's key ID in the encrypted file.
-- Cryptographically hashes the key name as the filename when creating encrypted files.
-- Optionally, asks to set `$HISTIGNORE` so `stymie` commands aren't stored in history (See the `postinstall.bash` script for an [example in Bash](scripts/postinstall.bash.example))[1].
+- Optionally, asks to set `$HISTIGNORE` so `stymie` commands aren't stored in history [1].
 
 [1] As an alternative to setting `$HISTIGNORE`, most shells by default allow for any command preceded by a `[[SPACE]]` to be ignored by history. Check the value of `$HISTCONTROL` for support.
 
