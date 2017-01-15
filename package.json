@@ -46,7 +46,7 @@
     "specs": "STYMIE=spec GNUPGHOME=spec/.gnupg JASMINE_CONFIG_PATH=jasmine.json jasmine && npm run suites",
     "suites": "dump_describes -t spec/stymie-spec.js -d spec -v --html && dump_describes -t spec/stymie-spec.js -d spec -v --md",
     "test": "npm run clean && npm run lint && npm run specs",
-    "watch": "STYMIE=spec GNUPGHOME=spec/.gnupg bash ./scripts/watch.bash"
+    "watch": "STYMIE=spec GNUPGHOME=spec/.gnupg bash ./scripts/watch.sh"
   }
 }
 
