@@ -83,7 +83,7 @@ stymie get example.com --field password | pbcopy
 
 ## License
 
-[MIT](LICENSE)
+[GPLv3](COPYING)
 
 ## Author
 
