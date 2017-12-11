@@ -82,6 +82,10 @@ stymie get example.com --field password | pbcopy
     --shadow | Obfuscates a password entry
     -h, --help | Display help
 
+## Ports
+
+- [Go][golang]
+
 ## License
 
 [GPLv3](COPYING)
@@ -92,4 +96,5 @@ Benjamin Toll
 
 [Diceware]: https://github.com/btoll/onf-diceware
 [Sillypass]: https://github.com/btoll/sillypass
+[golang]: https://github.com/btoll/stymie-go
 
